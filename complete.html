@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint — Find your IT path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:   #0f2942;
+    --blue-base:   #123a5e;
+    --blue-panel:  #163f66;
+    --line-soft:   rgba(210,230,245,0.14);
+    --line-strong: rgba(210,230,245,0.28);
+    --paper:       #eef3f7;
+    --paper-dim:   rgba(238,243,247,0.62);
+    --amber:       #f2a83c;
+    --amber-dim:   rgba(242,168,60,0.28);
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    min-height:100vh;
+    background:
+      repeating-linear-gradient(0deg, var(--line-soft) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, var(--line-soft) 0 1px, transparent 1px 44px),
+      radial-gradient(ellipse at 20% -10%, var(--blue-panel), var(--blue-deep) 60%);
+    background-color: var(--blue-deep);
+    color: var(--paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a{ color: inherit; }
+  a.external-link {
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--amber);
+    transition: all 0.2s ease;
+  }
+  a.external-link:hover {
+    color: var(--paper);
+    border-bottom-color: var(--paper);
+  }
+
+  /* ---------- Top nav bar ---------- */
+  .navbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    padding: 14px clamp(18px, 4vw, 40px);
+    background: rgba(15,41,66,0.86);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .nav-logo{
+    display:flex;
+    align-items:baseline;
+    gap: 8px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    padding: 4px 0;
+  }
+  .nav-logo .dot{ color: var(--amber); }
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+
+  .job-select-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .job-select-wrap::after{
+    content:"▾";
+    position:absolute;
+    right: 14px;
+    color: var(--amber);
+    font-size: 11px;
+    pointer-events:none;
+  }
+  select.job-select{
+    appearance:none;
+    -webkit-appearance:none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-strong);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 9px 32px 9px 14px;
+    border-radius: 2px;
+    cursor:pointer;
+    max-width: 46vw;
+  }
+  select.job-select:hover{ border-color: var(--amber); }
+  select.job-select option{ background: var(--blue-deep); color: var(--paper); }
+
+  .stage{
+    min-height: calc(100vh - 60px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 18px 60px;
+  }
+
+  /* ---------- Corner registration marks, blueprint chrome ---------- */
+  .corner-marks span{
+    position:fixed;
+    width:26px; height:26px;
+    border: 1px solid var(--line-strong);
+    opacity:0.7;
+    pointer-events:none;
+  }
+  .corner-marks .bl{ bottom:18px; left:18px; border-right:none; border-top:none; }
+  .corner-marks .br{ bottom:18px; right:18px; border-left:none; border-top:none; }
+
+  .masthead{
+    width:100%;
+    max-width: 680px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom: 26px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: var(--paper-dim);
+  }
+  .masthead b{ color:var(--paper); font-weight:500; }
+
+  h1.title{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height:1.08;
+    margin: 0 0 8px;
+    max-width: 680px;
+  }
+
+  p.sub{
+    font-size:15px;
+    color: var(--paper-dim);
+    max-width: 520px;
+    line-height:1.55;
+    margin: 0 0 34px;
+  }
+
+  /* ---------- Card ---------- */
+  .panel{
+    width:100%;
+    max-width: 640px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    padding: 36px clamp(20px,5vw,48px) 40px;
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:-1px; left: 22px; right:22px; height:1px;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 6px, transparent 6px 12px);
+    opacity:0.55;
+  }
+  .panel.wide{ max-width: 780px; }
+
+  /* ---------- Progress trace ---------- */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    margin-bottom: 30px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--paper-dim);
+  }
+  .trace{
+    position:relative;
+    flex:1;
+    height:2px;
+    background: var(--line-strong);
+    margin: 0 16px;
+  }
+  .trace-fill{
+    position:absolute; left:0; top:0; height:100%;
+    background: var(--amber);
+    transition: width 0.4s ease;
+  }
+
+  .q-index{ white-space:nowrap; }
+
+  /* ---------- Question ---------- */
+  .q-text{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: clamp(20px, 3.4vw, 25px);
+    line-height:1.35;
+    margin: 0 0 30px;
+    min-height: 70px;
+  }
+
+  .scale{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    padding: 6px 4px 0;
+  }
+  .scale::before{
+    content:"";
+    position:absolute;
+    left:22px; right:22px; top:24px;
+    height:1px;
+    background: var(--line-strong);
+  }
+  .node-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    padding: 4px 2px;
+    font-family: var(--font-body);
+    color: var(--paper-dim);
+    position:relative;
+    z-index:1;
+    flex:1;
+  }
+  .node-wrap:hover .node{ border-color: var(--amber); }
+  .node{
+    width: 20px; height:20px;
+    border-radius:50%;
+    border: 1.5px solid var(--line-strong);
+    background: var(--blue-deep);
+    transition: all 0.15s ease;
+  }
+  .node-wrap[aria-pressed="true"] .node{
+    background: var(--amber);
+    border-color: var(--amber);
+    box-shadow: 0 0 0 5px var(--amber-dim);
+  }
+  .node-label{
+    font-size: 11.5px;
+    text-align:center;
+    line-height:1.3;
+    max-width: 78px;
+  }
+  .node-wrap[aria-pressed="true"] .node-label{ color: var(--paper); }
+
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 40px;
+    gap: 12px;
+    flex-wrap:wrap;
+  }
+
+  button.ghost{
+    background:none;
+    border: 1px solid var(--line-strong);
+    color: var(--paper-dim);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 10px 16px;
+    border-radius: 2px;
+    cursor:pointer;
+    transition: all 0.15s ease;
+  }
+  button.ghost:hover:not(:disabled){ border-color: var(--paper); color: var(--paper); }
+  button.ghost:disabled{ opacity:0.3; cursor:not-allowed; }
+
+  button.primary{
+    background: var(--amber);
+    border: 1px solid var(--amber);
+    color: #1a1200;
+    font-family: var(--font-mono);
+    font-weight:500;
+    font-size: 12.5px;
+    padding: 10px 20px;
+    border-radius: 2px;
+    cursor:pointer;
+    transition: filter 0.15s ease, transform 0.1s ease;
+  }
+  button.primary:hover:not(:disabled){ filter: brightness(1.08); }
+  button.primary:disabled{ opacity:0.35; cursor:not-allowed; }
+  button.primary:active:not(:disabled){ transform: translateY(1px); }
+
+  /* ---------- Intro ---------- */
+  .intro-list{
+    list-style:none;
+    margin: 0 0 30px;
+    padding:0;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 22px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--paper-dim);
+  }
+  .intro-list li{ display:flex; gap:8px; }
+  .intro-list li::before{ content:"—"; color: var(--amber); }
+
+  /* ---------- Results ---------- */
+  .result-eyebrow{
+    font-family: var(--font-mono);
+    font-size:12px;
+    color: var(--amber);
+    margin-bottom:10px;
+  }
+  .result-title{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: clamp(26px, 5vw, 36px);
+    line-height:1.15;
+    margin: 0 0 16px;
+  }
+  .result-desc{
+    font-size:15px;
+    line-height:1.65;
+    color: var(--paper-dim);
+    margin: 0 0 30px;
+    max-width: 54ch;
+  }
+
+  .bars{
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .bar-row{
+    display:grid;
+    grid-template-columns: 150px 1fr 34px;
+    align-items:center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .bar-row .label{ color: var(--paper-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .bar-row .label:hover{ color: var(--paper); text-decoration: underline; text-underline-offset:3px; }
+  .bar-row.top .label{ color: var(--paper); }
+  .bar-track{
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--line-soft);
+    position:relative;
+    border-radius:1px;
+  }
+  .bar-fill{
+    position:absolute; left:0; top:0; bottom:0;
+    background: var(--line-strong);
+    width:0%;
+    transition: width 0.7s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar-row.top .bar-fill{ background: var(--amber); }
+  .bar-pct{ color: var(--paper-dim); text-align:right; }
+
+  .result-cta{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    margin-bottom: 6px;
+  }
+
+  .hidden{ display:none !important; }
+
+  /* ---------- Job detail page ---------- */
+  .job-eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .job-title{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(26px, 4.6vw, 38px);
+    line-height: 1.12;
+    margin: 0 0 26px;
+    max-width: 20ch;
+  }
+
+  .salary-block{
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    padding: 22px clamp(16px,3vw,28px);
+    margin-bottom: 30px;
+    background: rgba(255,255,255,0.02);
+  }
+  .salary-figure{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 4vw, 32px);
+    color: var(--amber);
+    margin: 0 0 8px;
+  }
+  .salary-note{
+    font-size: 13.5px;
+    color: var(--paper-dim);
+    line-height: 1.6;
+    margin: 0 0 20px;
+    max-width: 62ch;
+  }
+  .salary-ranges{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 22px;
+  }
+  .range-row{
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .range-row .r-label{ color: var(--paper-dim); }
+  .range-row .r-value{ color: var(--paper); font-size: 13.5px; }
+
+  .section-label{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber);
+    margin: 34px 0 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .section-label:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
+
+  p.body-text{
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--paper-dim);
+    margin: 0 0 8px;
+    max-width: 64ch;
+  }
+
+  ul.task-list{
+    list-style:none;
+    margin: 4px 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+  }
+  ul.task-list li{
+    font-size: 14px;
+    line-height:1.55;
+    color: var(--paper-dim);
+    padding-left: 18px;
+    position:relative;
+  }
+  ul.task-list li::before{
+    content:"";
+    position:absolute;
+    left:0; top:7px;
+    width:6px; height:1px;
+    background: var(--amber);
+  }
+
+  .subhead{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: 15px;
+    color: var(--paper);
+    margin: 22px 0 8px;
+  }
+  .subhead:first-of-type{ margin-top: 4px; }
+
+  /* ---------- Interview Prep Page ---------- */
+  .interview-card {
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    padding: 24px;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.02);
+  }
+  textarea.prep-area {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--line-strong);
+    color: var(--paper);
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  textarea.prep-area:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  textarea.prep-area:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    border-color: var(--line-soft);
+  }
+  .feedback-block {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--line-strong);
+    animation: fadeIn 0.4s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px){
+    .intro-list{ grid-template-columns: 1fr; }
+    .node-label{ display:none; }
+    .scale::before{ left:12px; right:12px; }
+    .salary-ranges{ grid-template-columns: 1fr; }
+    .nav-right{ width:100%; justify-content:flex-end; }
+    select.job-select{ max-width: 60vw; }
+  }
+</style>
+</head>
+<body>
+
+<div class="corner-marks">
+  <span class="bl"></span><span class="br"></span>
+</div>
+
+<nav class="navbar">
+  <button class="nav-logo" id="logoBtn"><span class="dot">■</span> Blueprint</button>
+  <div class="nav-right">
+    <div class="job-select-wrap">
+      <select class="job-select" id="jobSelect" aria-label="Jump to a job's page">
+        <option value="">Explore a role →</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<div class="stage">
+
+  <div id="quizFlow">
+    <div class="masthead">
+      <span>FIG. 01 — <b>CAREER SCHEMATIC</b></span>
+      <span id="statusLine">DRAFT / IN PROGRESS</span>
+    </div>
+
+    <h1 class="title">Find the IT role built for you.</h1>
+    <p class="sub">Twenty short statements about how you like to work. Answer honestly — there's no scoring for "right," only for "you." Then get matched to one of eight IT career paths.</p>
+
+    <!-- INTRO PANEL -->
+    <div class="panel" id="introPanel">
+      <div class="result-eyebrow">BEFORE YOU START</div>
+      <p style="font-size:15px; line-height:1.6; color:var(--paper-dim); margin:0 0 24px;">
+        For each statement, choose how much you agree — from strongly disagree to strongly agree. Takes about three minutes. Prefer to browse instead? Use the role menu in the top-right corner any time.
+      </p>
+      <ul class="intro-list">
+        <li>Software / Application Developer</li>
+        <li>Business / Systems Analyst</li>
+        <li>Data Analyst or Data Scientist</li>
+        <li>Cybersecurity Analyst</li>
+        <li>IT Project Manager</li>
+        <li>UX Designer / Product Manager</li>
+        <li>ERP / Systems Consultant</li>
+        <li>Cloud / Infrastructure Engineer</li>
+      </ul>
+      <div class="nav-row" style="justify-content:flex-end;">
+        <button class="primary" id="startBtn">Begin the quiz</button>
+      </div>
+    </div>
+
+    <!-- QUIZ PANEL -->
+    <div class="panel hidden" id="quizPanel">
+      <div class="progress-row">
+        <span class="q-index" id="qIndex">Q1 / 20</span>
+        <div class="trace"><div class="trace-fill" id="traceFill"></div></div>
+      </div>
+
+      <div class="q-text" id="qText"></div>
+
+      <div class="scale" id="scale" role="radiogroup" aria-label="Agreement scale"></div>
+
+      <div class="nav-row">
+        <button class="ghost" id="backBtn">← Back</button>
+        <button class="primary" id="nextBtn" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="panel hidden" id="resultPanel">
+      <div class="result-eyebrow" id="resultEyebrow">YOUR BEST MATCH</div>
+      <h2 class="result-title" id="resultTitle"></h2>
+      <p class="result-desc" id="resultDesc"></p>
+
+      <div class="bars" id="bars"></div>
+
+      <p class="result-cta">Click any role above to see full details and practice for interviews.</p>
+
+      <div class="nav-row" style="justify-content:flex-start;">
+        <button class="ghost" id="retakeBtn">↺ Retake the quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOB DETAIL PAGE -->
+  <div class="stage hidden" id="jobFlow" style="padding:0; min-height:auto;">
+    <div class="masthead">
+      <span>FIG. 02 — <b>ROLE DOSSIER</b></span>
+      <span id="jobStatusLine">REFERENCE / U.S. DATA</span>
+    </div>
+    <div class="panel wide" id="jobPanel"></div>
+  </div>
+  
+  <!-- INTERVIEW PREP PAGE -->
+  <div class="stage hidden" id="interviewFlow" style="padding:0; min-height:auto;">
+    <div class="masthead">
+      <span>FIG. 03 — <b>INTERVIEW PREP</b></span>
+      <span>PRACTICE MODULE</span>
+    </div>
+    <div class="panel wide" id="interviewPanel"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  const SCALE_LABELS = [
+    "Strongly disagree",
+    "Disagree",
+    "Neutral",
+    "Agree",
+    "Strongly agree"
+  ];
+
+  // 20 Questions
+  const QUESTIONS = [
+    { text: "I enjoy writing code to build applications, tools, or automate tasks.", primary: "dev" },
+    { text: "I like translating a business problem into clear requirements someone else can build.", primary: "ba" },
+    { text: "I enjoy digging through data to find patterns, trends, or build predictive models.", primary: "data" },
+    { text: "I'm drawn to finding security weaknesses and figuring out how to defend against them.", primary: "sec" },
+    { text: "I like planning timelines, tracking tasks, and keeping a team moving toward a deadline.", primary: "pm" },
+    { text: "I enjoy researching how people use a product and designing something more intuitive.", primary: "ux" },
+    { text: "I like configuring large business platforms (like SAP or Salesforce) to match how a company actually works.", primary: "erp" },
+    { text: "I enjoy managing servers, networks, or cloud infrastructure so everything stays up and running.", primary: "cloud" },
+    { text: "I'd rather coordinate people and communicate with stakeholders than write technical code myself.", primary: "pm", secondary: "ba" },
+    { text: "I like solving logic puzzles and methodically tracking down the cause of a bug.", primary: "dev", secondary: "sec" },
+    { text: "I care a lot about how something looks and feels, and I notice bad design immediately.", primary: "ux", secondary: "data" },
+    { text: "I'm comfortable with ambiguous, constantly changing systems and enjoy learning new tools as they appear.", primary: "cloud", secondary: "erp" },
+    { text: "I am interested in ensuring that large enterprise systems talk to each other correctly and reliably.", primary: "erp" },
+    { text: "I like making sure software systems don't break when a massive number of people try to use them at once.", primary: "cloud" },
+    { text: "I am fascinated by how hackers exploit systems and want to be the one who stops them.", primary: "sec" },
+    { text: "I prefer working with executives and stakeholders to figure out project budgets and schedules.", primary: "pm" },
+    { text: "I enjoy designing visual elements and mapping out logical user flows.", primary: "ux" },
+    { text: "I like crunching numbers to predict future business trends or customer behaviors.", primary: "data" },
+    { text: "I want to document how a business operates step-by-step in order to find process inefficiencies.", primary: "ba" },
+    { text: "I love learning new programming languages and building software features completely from scratch.", primary: "dev" }
+  ];
+
+  const ROLES = {
+    dev: {
+      name: "Software / Application Developer",
+      short: "Software Developer",
+      desc: "You like building things — turning an idea into working code. You'd likely thrive writing and shipping applications, solving logic puzzles as part of the job, and seeing your work run in production."
+    },
+    ba: {
+      name: "Business / Systems Analyst",
+      short: "Business Analyst",
+      desc: "You're the translator between business needs and technical solutions. You'd likely enjoy gathering requirements, mapping processes, and making sure what gets built actually solves the right problem."
+    },
+    data: {
+      name: "Data Analyst / Data Scientist",
+      short: "Data Analyst",
+      desc: "You think in patterns and evidence. You'd likely enjoy working with datasets, building models, and turning raw numbers into decisions other people can act on."
+    },
+    sec: {
+      name: "Cybersecurity Analyst",
+      short: "Cybersecurity",
+      desc: "You think like both an attacker and a defender. You'd likely enjoy hunting for vulnerabilities, monitoring for threats, and building systems that hold up under pressure."
+    },
+    pm: {
+      name: "IT Project Manager",
+      short: "IT Project Mgr",
+      desc: "You keep the moving parts moving. You'd likely enjoy planning timelines, coordinating across teams, and being the person who makes sure a project actually ships."
+    },
+    ux: {
+      name: "UX Designer / Product Manager",
+      short: "UX / Product",
+      desc: "You care about the human on the other side of the screen. You'd likely enjoy researching user needs, designing intuitive experiences, and shaping what a product should become."
+    },
+    erp: {
+      name: "ERP / Systems Consultant",
+      short: "ERP Consultant",
+      desc: "You like configuring big systems to fit how a real business actually operates. You'd likely enjoy implementation work — customizing platforms like SAP or Salesforce around a company's processes."
+    },
+    cloud: {
+      name: "Cloud / Infrastructure Engineer",
+      short: "Cloud Engineer",
+      desc: "You like the machinery underneath everything else. You'd likely enjoy managing servers, networks, and cloud environments so the rest of the organization can build on solid ground."
+    }
+  };
+
+  const DETAILS = {
+    dev: {
+      salaryFigure: "$110,000 – $150,000/yr",
+      salaryNote: "Reported averages vary a lot by title: ZipRecruiter puts general 'Software Developer' at roughly $112,000, while Glassdoor's broader 'Software Engineer' figure runs closer to $148,000. Specialized backend or platform roles trend toward the higher end.",
+      ranges: [
+        {label:"Entry-level", value:"$65,000 – $92,000"},
+        {label:"Mid-career", value:"$110,000 – $150,000"},
+        {label:"Senior", value:"$150,000 – $205,000+"},
+        {label:"Top 10% (90th pctile)", value:"$197,000 – $240,000+"}
+      ],
+      whatItIs: "A Software or Application Developer designs, writes, tests, and maintains the code that powers applications — anything from a mobile app to the backend systems behind a website. The role blends problem-solving with craftsmanship: you're not just making something work, you're making it maintainable, efficient, and easy for the next developer to pick up.",
+      tasks: [
+        "Writing, testing, and debugging code across the application stack",
+        "Translating feature requirements or designs into working software",
+        "Reviewing teammates' code and incorporating feedback on your own",
+        "Working within an Agile/Scrum process — sprints, standups, retros",
+        "Designing and integrating APIs and databases",
+        "Writing automated tests and fixing bugs found in production"
+      ],
+      skills: [
+        "Solid grounding in at least one language (JavaScript, Python, Java, C#, etc.)",
+        "Data structures and algorithms fundamentals",
+        "Git and collaborative version control workflows",
+        "Working SQL and database design knowledge"
+      ],
+      entryLevel: "Entry-level candidates or interns are expected to understand basic syntax in one primary language, how to use Git for basic version control (commit, push, pull, branch), and the fundamentals of object-oriented or functional programming. You should be able to write simple algorithms and query a database.",
+      strongCandidate: "A standout candidate doesn't just write working code; they write maintainable code. They communicate technical tradeoffs clearly, document their work, ask great questions during code reviews, and show a genuine curiosity about how the broader system functions.",
+      source: "U.S. Bureau of Labor Statistics & StackOverflow Developer Survey 2026",
+      moreInfoLink: "https://roadmap.sh/software-design-architecture",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a REST API and GraphQL.",
+          sampleAnswer: "REST uses multiple endpoints to fetch specific data structures, which can lead to over-fetching or under-fetching data. GraphQL exposes a single endpoint and allows the client to request exactly the shape and fields of data it needs.",
+          keyElements: ["Mentioning multiple endpoints (REST) vs single endpoint (GraphQL)", "Explaining over-fetching/under-fetching", "Highlighting that GraphQL transfers control over the data payload to the client"]
+        },
+        {
+          type: "Technical", question: "How would you approach finding a memory leak in a web application?",
+          sampleAnswer: "I would start by using the browser's DevTools, specifically taking heap snapshots before and after an action to see what objects aren't being garbage collected. I'd look for unremoved event listeners, detached DOM nodes, or global variable pollution.",
+          keyElements: ["Mentioning specific profiling tools (e.g., Chrome DevTools Heap Snapshot)", "Identifying common causes (event listeners, closures)", "Describing a systematic isolation approach"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you missed a deadline or realized you weren't going to finish a task in time.",
+          sampleAnswer: "During my last project, I underestimated the complexity of a database migration. Once I realized I was a day behind, I immediately alerted my project manager. We worked together to descop a non-essential feature for that sprint, ensuring the core migration still shipped on time. I learned to break database tasks into smaller estimates.",
+          keyElements: ["Taking immediate ownership and communicating early", "Focusing on solutions (descoping/reprioritizing) rather than hiding the problem", "Sharing the lesson learned to prevent future occurrences"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time you disagreed with a senior developer's technical design.",
+          sampleAnswer: "A senior dev suggested using a complex microservice architecture for a simple internal tool. I felt a monolith would be faster to build and maintain. I brought it up in a 1-on-1, acknowledging their expertise, but presenting a quick chart showing our tight deadline and small team size. They agreed to start with a monolith and scale later.",
+          keyElements: ["Addressing the disagreement respectfully and privately", "Using objective data (time, team size) rather than emotional arguments", "Demonstrating a willingness to compromise or find a middle ground"]
+        }
+      ]
+    },
+
+    ba: {
+      salaryFigure: "$100,000 – $125,000/yr",
+      salaryNote: "Glassdoor puts the average Business Systems Analyst around $118,000–$123,000; ZipRecruiter's figure runs lower, near $103,000, since it leans on posted job ranges rather than total compensation.",
+      ranges: [
+        {label:"Entry-level", value:"$70,000 – $95,000"},
+        {label:"Mid-career", value:"$100,000 – $130,000"},
+        {label:"Senior", value:"$130,000 – $180,000"},
+        {label:"Top 10% (90th pctile)", value:"$186,000 – $259,000"}
+      ],
+      whatItIs: "A Business or Systems Analyst sits between the business side of an organization and the technical teams building its systems. The job is translation: understanding what a department actually needs, documenting it clearly, and making sure whatever gets built genuinely solves the underlying problem.",
+      tasks: [
+        "Interviewing stakeholders to elicit and clarify business requirements",
+        "Mapping current and future-state business processes",
+        "Writing user stories, functional specs, and acceptance criteria",
+        "Facilitating requirements workshops between business units and IT",
+        "Planning and executing user acceptance testing (UAT)"
+      ],
+      skills: [
+        "Strong written and verbal communication",
+        "Requirements documentation and process modeling (BPMN, flowcharts)",
+        "Working SQL and Excel for lightweight data analysis",
+        "Comfort with Agile/Scrum delivery"
+      ],
+      entryLevel: "Entry-level candidates should be highly proficient in Excel, know basic SQL to query data for analysis, understand the Software Development Life Cycle (SDLC), and demonstrate the ability to write clear, structured documentation.",
+      strongCandidate: "A strong candidate is an expert at stakeholder management. They can say 'no' to bad ideas politely, they dig past what a user *says* they want to find what they *actually* need, and they can simplify complex technical constraints for business leaders.",
+      source: "International Institute of Business Analysis (IIBA) 2026 Report",
+      moreInfoLink: "https://www.iiba.org/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a functional and non-functional requirement.",
+          sampleAnswer: "A functional requirement defines what a system must do (e.g., 'The user must be able to log in with an email and password'). A non-functional requirement defines how the system should perform that function (e.g., 'The login page must load in under 2 seconds').",
+          keyElements: ["Clear definitions of both terms", "Providing a concrete example for functional (the 'what')", "Providing a concrete example for non-functional (the 'how')"]
+        },
+        {
+          type: "Technical", question: "Walk me through how you would create a process map for a company's onboarding flow.",
+          sampleAnswer: "First, I'd identify the boundaries: where does onboarding start and end. Then, I'd interview the HR, IT, and hiring managers to gather the steps. I'd draft a swimlane diagram showing actions, decisions, and systems involved. Finally, I'd review it with the stakeholders to ensure accuracy before finalizing.",
+          keyElements: ["Mentioning boundaries/scope definition", "Highlighting the interview/elicitation phase", "Using standard terminology like 'swimlane diagram' and validating with stakeholders"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle a stakeholder who frequently changes their requirements mid-project?",
+          sampleAnswer: "I acknowledge their request but immediately communicate the impact on the timeline and budget. I use a change-control process: I document the new requirement, estimate the delay it will cause, and present the trade-off. Often, when they see the cost in time, they decide to defer the change to a phase two.",
+          keyElements: ["Emphasizing impact analysis (time/budget)", "Using a formal change management/control process", "Offering phase-two/backlog as a compromise"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you had to gather requirements for a topic you knew nothing about.",
+          sampleAnswer: "I was assigned to a financial compliance project. Before interviewing stakeholders, I spent a day researching basic terminology and reviewing existing company docs. In the meetings, I was honest about my knowledge gaps and asked them to explain things as if I were a new hire. Taking detailed notes and repeating concepts back to them ensured we were aligned.",
+          keyElements: ["Doing preliminary research before meetings", "Showing humility and willingness to ask clarifying questions", "Using active listening ('repeating back') to verify understanding"]
+        }
+      ]
+    },
+
+    data: {
+      salaryFigure: "$85,000 – $160,000/yr",
+      salaryNote: "Data Analyst averages sit around $83,000–$94,000. Data Scientist — the more advanced, modeling-heavy version of the role — averages $123,000–$158,000, with total comp climbing well past $200,000 at senior levels.",
+      ranges: [
+        {label:"Entry (Analyst)", value:"$58,000 – $76,000"},
+        {label:"Mid (Analyst/Jr. Scientist)", value:"$85,000 – $120,000"},
+        {label:"Senior (Data Scientist)", value:"$140,000 – $180,000"},
+        {label:"Top 10% (90th pctile)", value:"$173,000 – $270,000+"}
+      ],
+      whatItIs: "A Data Analyst turns raw data into decisions — pulling numbers, cleaning them up, and building reports. A Data Scientist takes this further, building statistical models to predict outcomes. Most enter through analytics and grow into data science.",
+      tasks: [
+        "Writing SQL queries to pull and join data from multiple sources",
+        "Cleaning and reshaping messy, incomplete, or inconsistent datasets",
+        "Building dashboards and reports (Tableau, Power BI)",
+        "Running statistical analysis to test a hypothesis",
+        "Presenting findings to non-technical stakeholders in plain language"
+      ],
+      skills: [
+        "SQL — genuinely non-negotiable for this role",
+        "Python or R for analysis",
+        "Statistics fundamentals: distributions, hypothesis testing, regression",
+        "A visualization tool (Tableau or Power BI)"
+      ],
+      entryLevel: "Interns and entry-level analysts are expected to write complex SQL queries (Joins, CTEs, Window functions), manipulate data in Python (Pandas) or R, and have a foundational grasp of statistics and data visualization best practices.",
+      strongCandidate: "A top-tier data professional doesn't just hand over a spreadsheet; they hand over a recommendation. They have sharp business acumen, can spot when data is skewed or biased, and excel at explaining complex statistical concepts to non-technical executives.",
+      source: "Burtch Works Study 2026",
+      moreInfoLink: "https://www.kdnuggets.com/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a LEFT JOIN and an INNER JOIN.",
+          sampleAnswer: "An INNER JOIN returns only the rows where there is a match in both tables. A LEFT JOIN returns all the rows from the left table, and the matched rows from the right table; if there's no match, the result will contain NULL values for the right table's columns.",
+          keyElements: ["Accurate definition of INNER JOIN (intersection)", "Accurate definition of LEFT JOIN (all left, matching right)", "Mentioning NULL values for unmatched records"]
+        },
+        {
+          type: "Technical", question: "How would you explain a p-value to a non-technical marketing manager?",
+          sampleAnswer: "I would say: 'A p-value helps us measure if a result was just a fluke. If the p-value is very low (usually under 0.05), it means it's highly unlikely that this result happened by chance, so we can be confident our new marketing campaign actually worked.'",
+          keyElements: ["Avoiding overly academic statistical jargon", "Using a practical business analogy (e.g., 'a fluke' or 'by chance')", "Connecting it to a business outcome (confidence in a decision)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time your data analysis yielded a result the business didn't want to hear.",
+          sampleAnswer: "I analyzed a newly launched feature and found user engagement actually dropped by 10%. The product team was heavily invested in it. I presented the data objectively, showing exactly how I measured the drop, but also paired the bad news with insights on *where* users were dropping off, offering a path to fix it rather than just a roadblock.",
+          keyElements: ["Maintaining data integrity despite pressure", "Presenting findings objectively and transparently", "Offering actionable next steps rather than just delivering bad news"]
+        },
+        {
+          type: "Behavioral", question: "Describe a situation where you had to work with extremely messy or incomplete data.",
+          sampleAnswer: "We received a client dataset with varying date formats, missing ZIP codes, and duplicate entries. I wrote a Python script using Pandas to standardize the dates, used a lookup table to fill in obvious missing ZIPs, and established a rule to deduplicate based on user ID and latest timestamp. I also documented these cleaning rules so stakeholders knew exactly what assumptions were made.",
+          keyElements: ["Describing specific tools used to clean (e.g., Pandas, Regex)", "Explaining the logical rules applied (deduplication logic)", "Documenting assumptions so stakeholders understand the data's limitations"]
+        }
+      ]
+    },
+
+    sec: {
+      salaryFigure: "$100,000 – $135,000/yr",
+      salaryNote: "ZipRecruiter's broad average sits near $99,000; industry aggregators that include senior/specialized titles report $128,000–$136,000. Entry-level SOC work and senior incident response are priced differently.",
+      ranges: [
+        {label:"Entry-level (SOC Tier 1)", value:"$55,000 – $91,500"},
+        {label:"Mid-career", value:"$95,000 – $148,000"},
+        {label:"Senior", value:"$130,000 – $196,000"},
+        {label:"Top 10% (90th pctile)", value:"$137,000 – $297,000"}
+      ],
+      whatItIs: "A Cybersecurity Analyst protects an organization's systems and data from attack. Day to day, that means watching for suspicious activity, investigating incidents, and continuously hardening defenses.",
+      tasks: [
+        "Monitoring SIEM tools (Splunk, QRadar) for suspicious activity",
+        "Investigating and responding to security incidents and alerts",
+        "Running or reviewing vulnerability scans",
+        "Managing firewalls, endpoint protection, and identity/access controls",
+        "Writing incident reports and post-incident reviews"
+      ],
+      skills: [
+        "Solid networking fundamentals (TCP/IP, firewalls, DNS)",
+        "Comfort administering both Windows and Linux systems",
+        "SIEM and log-analysis tool experience",
+        "Understanding of common attack patterns (OWASP Top 10)"
+      ],
+      entryLevel: "Entry-level candidates typically need to know core networking (OSI model, TCP/IP, Ports), basic Linux command line, common malware types, and the principles of the CIA triad (Confidentiality, Integrity, Availability).",
+      strongCandidate: "A great security analyst stays calm under extreme pressure. They are naturally curious, constantly research new threat vectors in their free time, and understand that security must balance with business productivity.",
+      source: "SANS Institute & CyberSeek 2026",
+      moreInfoLink: "https://www.sans.org/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "What happens exactly when you type google.com into your browser and press Enter?",
+          sampleAnswer: "The browser checks its cache for the IP address. If not found, it queries the OS, then the router, then the ISP's DNS to resolve the domain to an IP. Once the IP is found, the browser initiates a TCP handshake (SYN, SYN-ACK, ACK) with the server. Then, a TLS handshake secures the connection, and an HTTP GET request is sent to fetch the webpage.",
+          keyElements: ["Mentioning DNS resolution", "Describing the TCP 3-way handshake", "Including the TLS/SSL handshake for HTTPS security"]
+        },
+        {
+          type: "Technical", question: "Explain Cross-Site Scripting (XSS) and how to prevent it.",
+          sampleAnswer: "XSS occurs when an application includes untrusted data in a web page without proper validation or escaping, allowing an attacker to execute malicious scripts in the victim's browser. It can be prevented by strictly sanitizing and validating user input on the server side, and contextually output-encoding data before rendering it.",
+          keyElements: ["Defining XSS as executing malicious scripts in a victim's browser", "Identifying the root cause (untrusted input)", "Stating prevention methods (input validation, output encoding)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you had to explain a complex security risk to a non-technical manager.",
+          sampleAnswer: "We had an outdated server vulnerable to a known exploit. Instead of talking about buffer overflows and CVE scores, I explained it to the operations director like a physical building: 'We have a side door with a broken lock. It might be fine for a while, but if someone finds it, they bypass the front desk entirely.' They immediately approved the downtime to patch it.",
+          keyElements: ["Avoiding technical jargon (CVEs, specific exploit mechanics)", "Using relatable, real-world analogies (locks, doors, alarms)", "Focusing on the business risk (data loss, downtime) rather than the technical vulnerability"]
+        },
+        {
+          type: "Behavioral", question: "How would you handle receiving a critical IDS alert at 2 AM on a Saturday?",
+          sampleAnswer: "First, I'd verify if it's a true positive or a false alarm by checking the logs and correlating data. If it's a legitimate threat, I would follow our incident response playbook: isolating the affected system from the network to contain the threat, documenting my findings, and escalating to the on-call incident commander immediately.",
+          keyElements: ["Verifying the alert first (avoiding panic over false positives)", "Following established procedures/playbooks", "Taking immediate containment action (isolation) before escalation"]
+        }
+      ]
+    },
+
+    pm: {
+      salaryFigure: "$100,000 – $140,000/yr",
+      salaryNote: "ZipRecruiter's active-postings average is around $114,000; Glassdoor's total-compensation figure runs near $130,000–$139,000. PMP-certified project managers earn roughly a third more.",
+      ranges: [
+        {label:"Entry (Coordinator)", value:"$55,000 – $80,000"},
+        {label:"Mid-career (3–7 yrs)", value:"$100,000 – $130,000"},
+        {label:"Senior (10+ yrs)", value:"$145,000 – $176,000"},
+        {label:"Top 10% (90th pctile)", value:"$140,000 – $217,000+"}
+      ],
+      whatItIs: "An IT Project Manager plans, coordinates, and delivers technology projects on time and budget. The job is less about writing code yourself and more about scope, schedule, risk, and communication.",
+      tasks: [
+        "Defining project scope, objectives, and success criteria",
+        "Building and maintaining project plans, timelines, and budgets",
+        "Running standups, status meetings, and steering committee updates",
+        "Tracking risks and issues, and escalating them before they become blockers",
+        "Facilitating Agile ceremonies (sprint planning, retros)"
+      ],
+      skills: [
+        "Project planning and scheduling (Gantt charts, critical path)",
+        "Budget management and resource allocation",
+        "Risk identification and mitigation planning",
+        "Fluency in both Waterfall and Agile/Scrum methodologies"
+      ],
+      entryLevel: "Entry-level coordinators should understand project management tools (Jira, Asana, MS Project), basic Agile/Scrum concepts, and have excellent organizational and meeting facilitation skills.",
+      strongCandidate: "A stellar PM operates with high emotional intelligence. They act as a 'servant leader' who removes roadblocks for the technical team, and they excel at anticipating risks before they manifest.",
+      source: "Project Management Institute (PMI) 2026 Salary Survey",
+      moreInfoLink: "https://www.pmi.org/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the Critical Path Method.",
+          sampleAnswer: "The critical path is the longest sequence of dependent tasks in a project plan that must be completed on time for the project to finish by its deadline. If any task on the critical path is delayed, the entire project is delayed.",
+          keyElements: ["Defining it as the longest sequence of dependent tasks", "Connecting it directly to the final project deadline", "Noting that delays on this path delay the whole project"]
+        },
+        {
+          type: "Technical", question: "When would you choose an Agile approach over a Waterfall approach?",
+          sampleAnswer: "I'd choose Agile when requirements are uncertain, expected to change, or when we want to deliver value iteratively to get quick user feedback. Waterfall is better for projects with rigid constraints, strict regulatory requirements, or when the end goal is completely known and unlikely to change, like a hardware rollout.",
+          keyElements: ["Linking Agile to ambiguity and iterative feedback", "Linking Waterfall to fixed constraints and predictability", "Showing flexibility rather than dogmatic preference for one methodology"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time a project you were managing was going to miss its deadline. What did you do?",
+          sampleAnswer: "A key vendor was two weeks late delivering an API. I immediately called a meeting with the sponsor. I laid out three options: delay the launch by two weeks, launch on time but without the API integration (descope), or approve overtime budget to fast-track integration once it arrived. They chose to descope, and we launched on time.",
+          keyElements: ["Early detection and transparent communication", "Coming to leadership with options, not just problems", "Understanding the levers of project management (time, scope, budget)"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle scope creep from a senior stakeholder?",
+          sampleAnswer: "When a VP asked for a major new feature mid-sprint, I validated their idea but brought it back to the project charter. I estimated the time it would take and explained that adding it now would push our core launch back a month. I asked if they wanted to officially alter the project scope and budget, or add it to the phase-two backlog. They chose the backlog.",
+          keyElements: ["Validating the stakeholder's request so they feel heard", "Quantifying the impact of the change (time/money)", "Using the backlog as a constructive alternative to a flat 'no'"]
+        }
+      ]
+    },
+
+    ux: {
+      salaryFigure: "$95,000 – $140,000/yr",
+      salaryNote: "Glassdoor and ZipRecruiter put the average UX Designer around $106,000–$108,000. Companies calling the same work 'Product Designer' often post meaningfully higher bands.",
+      ranges: [
+        {label:"Entry-level", value:"$65,000 – $91,000"},
+        {label:"Mid-career", value:"$95,000 – $130,000"},
+        {label:"Senior", value:"$140,000 – $186,000"},
+        {label:"Top 10% (90th pctile)", value:"$152,000 – $241,000+"}
+      ],
+      whatItIs: "A UX Designer focuses on how a product feels and functions from the user's perspective — researching real needs, prototyping solutions, and refining them based on testing.",
+      tasks: [
+        "Conducting user research: interviews, surveys, usability testing",
+        "Building wireframes and interactive prototypes (Figma)",
+        "Creating user journey maps and personas",
+        "Collaborating closely with engineers on implementation feasibility",
+        "Presenting design rationale and trade-offs to stakeholders"
+      ],
+      skills: [
+        "Prototyping tools (Figma)",
+        "User research methods and synthesis",
+        "Information architecture and interaction design",
+        "Strong storytelling to explain design reasoning"
+      ],
+      entryLevel: "Entry-level designers need proficiency in Figma, an understanding of core design heuristics, and knowledge of basic user research techniques. A strong portfolio demonstrating your thought process is required.",
+      strongCandidate: "A great UX professional relies on data, not just intuition. They can gracefully defend a design decision, accept critical feedback without ego, and balance user needs against technical constraints.",
+      source: "Nielsen Norman Group 2026 Industry Report",
+      moreInfoLink: "https://www.nngroup.com/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "What is the difference between quantitative and qualitative user research?",
+          sampleAnswer: "Quantitative research answers 'how many and how much' using hard numbers, like analytics data or A/B test results. Qualitative research answers 'why and how' using observational methods, like user interviews or think-aloud usability testing, to understand user motivations and pain points.",
+          keyElements: ["Correctly associating Quant with numbers/scale (the 'what/how much')", "Correctly associating Qual with observation/interviews (the 'why')", "Mentioning specific methods for each (A/B tests vs Interviews)"]
+        },
+        {
+          type: "Technical", question: "How do you ensure your designs are accessible?",
+          sampleAnswer: "I design with WCAG standards in mind from the start. This means checking color contrast ratios, ensuring typography is readable, providing alt-text guidelines for developers, and making sure interactive elements are easily navigable via keyboard and screen readers.",
+          keyElements: ["Mentioning WCAG (Web Content Accessibility Guidelines)", "Citing specific checks (color contrast, typography)", "Mentioning non-visual access (screen readers, keyboard navigation)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time your design failed a usability test.",
+          sampleAnswer: "I designed an onboarding flow I thought was beautiful, but during testing, 4 out of 5 users couldn't find the 'Skip' button and got frustrated. I realized I prioritized aesthetics over clarity. I immediately revised the prototype to make the button high-contrast and moved it to the standard bottom-right position. Subsequent testing showed a 100% success rate.",
+          keyElements: ["Separating ego from the work", "Identifying the root cause of the failure", "Using the feedback to iterate and improve the design"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle pushback from developers who say your design is too hard to implement?",
+          sampleAnswer: "I sit down with them to understand the specific technical constraint. Usually, they aren't rejecting the whole design, just a complex animation or custom component. Once I understand the limitation, we brainstorm together to find a UI compromise that still solves the user's problem but uses standard components that are faster to build.",
+          keyElements: ["Approaching developers as collaborators, not adversaries", "Seeking to understand the specific technical constraint", "Being willing to compromise on aesthetics to maintain functionality and delivery speed"]
+        }
+      ]
+    },
+
+    erp: {
+      salaryFigure: "$110,000 – $150,000/yr",
+      salaryNote: "SAP Consultant averages run $130,000–$151,000; Salesforce Consultant sits at $119,000–$127,000. Pre-sales 'solution consultants' are priced differently than functional consultants.",
+      ranges: [
+        {label:"Entry-level", value:"$60,000 – $85,000"},
+        {label:"Mid-career (functional)", value:"$100,000 – $135,000"},
+        {label:"Senior", value:"$120,000 – $185,000"},
+        {label:"Top 10% / Architect", value:"$180,000 – $250,000+"}
+      ],
+      whatItIs: "An ERP Consultant customizes large business platforms (SAP, Salesforce, Workday) so the software matches how a specific company runs its operations. It's part business analysis, part technical configuration.",
+      tasks: [
+        "Gathering requirements from business departments",
+        "Configuring modules, objects, and workflows within the platform",
+        "Mapping and migrating data from legacy systems",
+        "Testing configurations through UAT",
+        "Training end users and producing documentation"
+      ],
+      skills: [
+        "Deep knowledge of one platform's modules",
+        "Business-process knowledge",
+        "Requirements gathering and stakeholder facilitation",
+        "Configuration logic and data-migration experience"
+      ],
+      entryLevel: "Entry-level consultants often need basic business process knowledge (e.g., Procure-to-pay, Lead-to-cash) and foundational certifications in their chosen platform, such as Salesforce Administrator.",
+      strongCandidate: "A top ERP consultant bridges the gap between raw business operations and technical platform capabilities. They understand the business's industry deeply and know when to use standard out-of-the-box features versus building custom code.",
+      source: "Mason Frank & ASUG 2026 Compensation Surveys",
+      moreInfoLink: "https://trailhead.salesforce.com/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "When would you recommend building a custom object/table instead of using a standard one?",
+          sampleAnswer: "I always prefer standard objects because they receive automatic updates and integrate easily with native reporting. I only recommend custom objects when the business requirement is so unique that trying to force it into a standard object would require excessive workarounds, or when the data fundamentally doesn't fit standard relational models.",
+          keyElements: ["Stating a strong preference for standard/out-of-the-box features first", "Highlighting maintainability and upgrade benefits of standard features", "Defining a clear threshold for when custom is necessary"]
+        },
+        {
+          type: "Technical", question: "What are the key steps in a successful data migration?",
+          sampleAnswer: "A successful migration involves five steps: extraction from the legacy system, cleansing/deduplicating the data, mapping the fields to the new system's schema, performing a test load in a sandbox to validate, and finally the production load followed by data integrity checks.",
+          keyElements: ["Mentioning data cleansing/prep before loading", "Highlighting the field mapping process", "Emphasizing the importance of a test load in a sandbox environment"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time you dealt with strong user resistance to a new system.",
+          sampleAnswer: "During a Salesforce rollout, the sales team hated the new UI because it required more clicks to log a call. Instead of forcing it, I sat with them, observed their workflow, and configured a custom quick-action button that reduced the process to one click. By listening and making a small tweak, I won their buy-in for the rest of the system.",
+          keyElements: ["Empathizing with the user's frustration rather than dismissing it", "Observing the actual workflow", "Providing a quick technical win to build trust"]
+        },
+        {
+          type: "Behavioral", question: "How do you translate a complex business rule into system configuration?",
+          sampleAnswer: "First, I ask the stakeholder to map the rule out visually or write it as 'If/Then' statements. Once I understand the logic, I review the platform's capabilities to see if a standard workflow or validation rule can handle it. I then build a prototype in the sandbox and have the stakeholder test it to ensure it behaves exactly as they intended before pushing to production.",
+          keyElements: ["Breaking the rule down into logical steps (If/Then)", "Checking standard capabilities before custom coding", "Validating with a prototype in a safe sandbox environment"]
+        }
+      ]
+    },
+
+    cloud: {
+      salaryFigure: "$120,000 – $150,000/yr",
+      salaryNote: "Estimates range widely by source. Glassdoor runs near $152,000–$157,000. Related titles — DevOps Engineer, Site Reliability Engineer — trend even higher due to production accountability.",
+      ranges: [
+        {label:"Entry-level", value:"$110,000 – $130,000"},
+        {label:"Mid-career", value:"$120,000 – $152,000"},
+        {label:"Senior", value:"$140,000 – $191,000+"},
+        {label:"Top 10% (90th pctile)", value:"$163,000 – $238,000"}
+      ],
+      whatItIs: "A Cloud/Infrastructure Engineer designs, builds, and maintains the underlying computing infrastructure (AWS, Azure, GCP) that everything else runs on. The field has shifted heavily toward code-defined infrastructure.",
+      tasks: [
+        "Designing and provisioning cloud infrastructure",
+        "Writing Infrastructure as Code (IaC) with tools like Terraform",
+        "Automating deployment pipelines (CI/CD)",
+        "Monitoring system performance, uptime, and resource usage",
+        "Managing containerized workloads (Docker, Kubernetes)"
+      ],
+      skills: [
+        "Deep knowledge of at least one major cloud platform",
+        "Linux system administration and networking fundamentals",
+        "Infrastructure as Code (Terraform)",
+        "Containerization (Docker, Kubernetes) and CI/CD tools"
+      ],
+      entryLevel: "Entry-level cloud engineers must have strong Linux command line skills, a solid understanding of networking (IP, DNS, Subnets), basic scripting (Python/Bash), and familiarity with core cloud primitives (compute, storage).",
+      strongCandidate: "A top-tier cloud engineer treats infrastructure as version-controlled software. They focus relentlessly on automation, architect for high availability and disaster recovery, and keep a sharp eye on optimizing cloud costs.",
+      source: "State of Cloud Strategy Report 2026",
+      moreInfoLink: "https://aws.amazon.com/training/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between IaaS, PaaS, and SaaS.",
+          sampleAnswer: "Infrastructure as a Service (IaaS) gives you raw computing primitives like VMs and networking (e.g., AWS EC2) where you manage the OS and runtime. Platform as a Service (PaaS) abstracts the OS away, letting you just deploy code (e.g., Heroku). Software as a Service (SaaS) provides a complete, managed application (e.g., Gmail).",
+          keyElements: ["Correctly defining IaaS (managing OS/infrastructure)", "Correctly defining PaaS (managing only application code)", "Correctly defining SaaS (fully managed end-user software)"]
+        },
+        {
+          type: "Technical", question: "How does a load balancer work, and why is it important?",
+          sampleAnswer: "A load balancer acts as a traffic cop, distributing incoming network traffic across multiple servers. This ensures no single server bears too much demand, improving application responsiveness, and provides high availability—if one server fails, the load balancer redirects traffic to the remaining healthy servers.",
+          keyElements: ["Explaining the distribution of traffic across multiple nodes", "Mentioning performance/responsiveness benefits", "Mentioning high availability and fault tolerance"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you handled a production outage.",
+          sampleAnswer: "During a major deployment, a misconfigured firewall rule caused a database timeout. My monitoring tools alerted me immediately. I joined the incident bridge, communicated the issue to the team, and rolled back the Terraform deployment to the previous stable state. Once services were restored, I wrote a post-mortem detailing the root cause and added a pre-deployment check to our CI/CD pipeline to prevent it from happening again.",
+          keyElements: ["Staying calm and communicating clearly", "Focusing on rapid restoration (rolling back) over immediate troubleshooting", "Implementing preventative measures (post-mortem/CI checks)"]
+        },
+        {
+          type: "Behavioral", question: "How do you balance the need for rapid feature deployment with the need for infrastructure stability?",
+          sampleAnswer: "I believe in enabling developers rather than blocking them, which means building 'paved roads.' I work with them to set up robust CI/CD pipelines with automated testing and infrastructure-as-code templates. This allows them to deploy rapidly and safely, because the guardrails are built directly into the automation rather than relying on manual, slow approvals.",
+          keyElements: ["Viewing infrastructure as an enabler, not a blocker", "Relying on automation and CI/CD for safety", "Using Infrastructure as Code (IaC) to standardize deployments"]
+        }
+      ]
+    }
+  };
+
+  const ROLE_ORDER = ["dev","ba","data","sec","pm","ux","erp","cloud"];
+
+  const answers = new Array(QUESTIONS.length).fill(null);
+  let current = 0;
+
+  const introPanel = document.getElementById('introPanel');
+  const quizPanel = document.getElementById('quizPanel');
+  const resultPanel = document.getElementById('resultPanel');
+  const quizFlow = document.getElementById('quizFlow');
+  const jobFlow = document.getElementById('jobFlow');
+  const jobPanel = document.getElementById('jobPanel');
+  const interviewFlow = document.getElementById('interviewFlow');
+  const interviewPanel = document.getElementById('interviewPanel');
+  
+  const startBtn = document.getElementById('startBtn');
+  const qIndex = document.getElementById('qIndex');
+  const qText = document.getElementById('qText');
+  const scaleEl = document.getElementById('scale');
+  const traceFill = document.getElementById('traceFill');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const retakeBtn = document.getElementById('retakeBtn');
+  const statusLine = document.getElementById('statusLine');
+  const logoBtn = document.getElementById('logoBtn');
+  const jobSelect = document.getElementById('jobSelect');
+
+  // Populate the nav dropdown
+  ROLE_ORDER.forEach(key => {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = ROLES[key].name;
+    jobSelect.appendChild(opt);
+  });
+
+  jobSelect.addEventListener('change', () => {
+    const key = jobSelect.value;
+    if (key){ showJobPage(key); }
+  });
+
+  logoBtn.addEventListener('click', () => {
+    jobSelect.value = "";
+    showQuizFlow();
+  });
+
+  startBtn.addEventListener('click', () => {
+    introPanel.classList.add('hidden');
+    quizPanel.classList.remove('hidden');
+    statusLine.textContent = "DRAFT / IN PROGRESS";
+    renderQuestion();
+  });
+
+  function renderQuestion(){
+    const q = QUESTIONS[current];
+    qIndex.textContent = `Q${current+1} / ${QUESTIONS.length}`;
+    qText.textContent = q.text;
+    traceFill.style.width = `${(current / QUESTIONS.length) * 100}%`;
+
+    scaleEl.innerHTML = "";
+    SCALE_LABELS.forEach((label, i) => {
+      const val = i + 1;
+      const wrap = document.createElement('button');
+      wrap.type = "button";
+      wrap.className = "node-wrap";
+      wrap.setAttribute('role','radio');
+      wrap.setAttribute('aria-pressed', answers[current] === val ? 'true' : 'false');
+      wrap.innerHTML = `<span class="node"></span><span class="node-label">${label}</span>`;
+      wrap.addEventListener('click', () => selectAnswer(val));
+      scaleEl.appendChild(wrap);
+    });
+
+    backBtn.disabled = current === 0;
+    nextBtn.disabled = answers[current] === null;
+    nextBtn.textContent = current === QUESTIONS.length - 1 ? "See my match →" : "Next →";
+  }
+
+  function selectAnswer(val){
+    answers[current] = val;
+    nextBtn.disabled = false;
+    [...scaleEl.children].forEach((wrap, i) => {
+      wrap.setAttribute('aria-pressed', (i+1) === val ? 'true' : 'false');
+    });
+  }
+
+  backBtn.addEventListener('click', () => {
+    if (current > 0){ current--; renderQuestion(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (current < QUESTIONS.length - 1){
+      current++;
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  });
+
+  retakeBtn.addEventListener('click', () => {
+    answers.fill(null);
+    current = 0;
+    resultPanel.classList.add('hidden');
+    introPanel.classList.remove('hidden');
+    statusLine.textContent = "DRAFT / IN PROGRESS";
+  });
+
+  function computeScores(){
+    const scores = {};
+    Object.keys(ROLES).forEach(k => scores[k] = 0);
+
+    QUESTIONS.forEach((q, i) => {
+      const val = answers[i];
+      const centered = val - 3; // -2..+2
+      scores[q.primary] += centered * 2;
+      if (q.secondary){
+        scores[q.secondary] += centered * 1;
+      }
+    });
+
+    return scores;
+  }
+
+  function showResults(){
+    quizPanel.classList.add('hidden');
+    resultPanel.classList.remove('hidden');
+    statusLine.textContent = "FINAL / MATCHED";
+
+    const scores = computeScores();
+    const ranked = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+    const [topKey] = ranked[0];
+    const top = ROLES[topKey];
+
+    document.getElementById('resultTitle').textContent = top.name;
+    document.getElementById('resultDesc').textContent = top.desc;
+
+    const maxScore = ranked[0][1];
+    const minScore = ranked[ranked.length - 1][1];
+    const range = Math.max(1, maxScore - minScore);
+
+    const barsEl = document.getElementById('bars');
+    barsEl.innerHTML = "";
+    ranked.forEach(([key, score], i) => {
+      const pct = Math.round(((score - minScore) / range) * 82) + 10; // 10–92%
+      const row = document.createElement('div');
+      row.className = "bar-row" + (i === 0 ? " top" : "");
+      row.innerHTML = `
+        <span class="label" data-key="${key}">${ROLES[key].short}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        <span class="bar-pct">${i === 0 ? "★" : ""}</span>
+      `;
+      barsEl.appendChild(row);
+      requestAnimationFrame(() => {
+        row.querySelector('.bar-fill').style.width = pct + "%";
+      });
+    });
+
+    barsEl.querySelectorAll('.label').forEach(el => {
+      el.addEventListener('click', () => {
+        jobSelect.value = el.dataset.key;
+        showJobPage(el.dataset.key);
+      });
+    });
+  }
+
+  // ---------- Navigation logic ----------
+
+  function showQuizFlow(){
+    jobFlow.classList.add('hidden');
+    interviewFlow.classList.add('hidden');
+    quizFlow.classList.remove('hidden');
+  }
+
+  // ---------- Job detail page rendering ----------
+
+  function showJobPage(key){
+    const role = ROLES[key];
+    const d = DETAILS[key];
+    if (!role || !d) return;
+
+    quizFlow.classList.add('hidden');
+    interviewFlow.classList.add('hidden');
+    jobFlow.classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+
+    const rangesHtml = d.ranges.map(r => `
+      <div class="range-row">
+        <span class="r-label">${r.label}</span>
+        <span class="r-value">${r.value}</span>
+      </div>
+    `).join('');
+
+    const tasksHtml = d.tasks.map(t => `<li>${t}</li>`).join('');
+    const skillsHtml = d.skills.map(s => `<li>${s}</li>`).join('');
+
+    jobPanel.innerHTML = `
+      <div class="job-eyebrow">ROLE ${(ROLE_ORDER.indexOf(key)+1).toString().padStart(2,'0')} / ${ROLE_ORDER.length} — U.S. DATA, 2026</div>
+      <h2 class="job-title">${role.name}</h2>
+
+      <div class="salary-block">
+        <div class="salary-figure">${d.salaryFigure}</div>
+        <p class="salary-note">${d.salaryNote}</p>
+        <div class="salary-ranges">${rangesHtml}</div>
+      </div>
+
+      <div class="section-label">WHAT THE JOB IS</div>
+      <p class="body-text">${d.whatItIs}</p>
+
+      <div class="section-label">DAY-TO-DAY TASKS</div>
+      <ul class="task-list">${tasksHtml}</ul>
+
+      <div class="section-label">TECHNICAL SKILLS & TOOLS</div>
+      <ul class="task-list">${skillsHtml}</ul>
+
+      <div class="section-label">ENTRY-LEVEL & INTERNSHIP EXPECTATIONS</div>
+      <p class="body-text">${d.entryLevel}</p>
+
+      <div class="section-label">WHAT MAKES A STRONG CANDIDATE</div>
+      <p class="body-text">${d.strongCandidate}</p>
+
+      <div class="section-label">ADDITIONAL RESOURCES</div>
+      <p class="body-text" style="font-family:var(--font-mono); font-size:12.5px;">Source: ${d.source}</p>
+      <p class="body-text">
+        <a href="${d.moreInfoLink}" target="_blank" rel="noopener noreferrer" class="external-link">Learn more about this career path →</a>
+      </p>
+
+      <div class="nav-row" style="margin-top:48px;">
+        <button class="ghost" id="jobBackBtn">← Back to Quiz</button>
+        <button class="primary" id="interviewPrepBtn">Practice for Interviews →</button>
+      </div>
+    `;
+
+    document.getElementById('jobBackBtn').addEventListener('click', () => {
+      jobSelect.value = "";
+      showQuizFlow();
+    });
+
+    document.getElementById('interviewPrepBtn').addEventListener('click', () => {
+      showInterviewPage(key);
+    });
+  }
+
+  // ---------- Interview Prep rendering ----------
+
+  function showInterviewPage(key) {
+    const role = ROLES[key];
+    const d = DETAILS[key];
+
+    quizFlow.classList.add('hidden');
+    jobFlow.classList.add('hidden');
+    interviewFlow.classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+
+    let html = `
+      <div class="job-eyebrow">INTERVIEW PREP</div>
+      <h2 class="job-title" style="max-width:none;">${role.name}</h2>
+      <p class="body-text" style="margin-bottom:32px;">Read the question, type your response into the box, and submit to compare your answer against an ideal response.</p>
+    `;
+
+    d.interviewPrep.forEach((q, idx) => {
+      html += `
+        <div class="interview-card">
+          <div class="result-eyebrow">${q.type.toUpperCase()} QUESTION ${idx + 1}</div>
+          <p style="font-family:var(--font-display); font-weight:600; font-size:18px; margin-bottom:16px;">${q.question}</p>
+          
+          <textarea class="prep-area" id="ans-${idx}" placeholder="Type your answer here..." rows="4"></textarea>
+          <button class="primary submit-ans" data-idx="${idx}">Submit Answer</button>
+          
+          <div id="feedback-${idx}" class="feedback-block hidden">
+            <div class="subhead">Sample Answer</div>
+            <p class="body-text" style="margin-bottom: 20px;"><em>"${q.sampleAnswer}"</em></p>
+            
+            <div class="subhead">What sets a great answer apart:</div>
+            <ul class="task-list">
+              ${q.keyElements.map(e => `<li>${e}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="nav-row" style="justify-content:flex-start;">
+        <button class="ghost" id="backToJobBtn">← Back to Role Dossier</button>
+      </div>
+    `;
+
+    interviewPanel.innerHTML = html;
+
+    // Attach logic to submit buttons
+    document.querySelectorAll('.submit-ans').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = e.target.dataset.idx;
+        const textArea = document.getElementById(`ans-${idx}`);
+        
+        if (textArea.value.trim() === '') {
+          alert("Please type an answer before submitting.");
+          return;
+        }
+
+        document.getElementById(`feedback-${idx}`).classList.remove('hidden');
+        e.target.classList.add('hidden');
+        textArea.disabled = true;
+      });
+    });
+
+    document.getElementById('backToJobBtn').addEventListener('click', () => {
+      showJobPage(key);
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
