@@ -803,7 +803,7 @@
       entryLevel: "Entry-level candidates should be highly proficient in Excel, know basic SQL to query data for analysis, understand the Software Development Life Cycle (SDLC), and demonstrate the ability to write clear, structured documentation.",
       strongCandidate: "A strong candidate is an expert at stakeholder management. They can say 'no' to bad ideas politely, they dig past what a user *says* they want to find what they *actually* need, and they can simplify complex technical constraints for business leaders.",
       source: "International Institute of Business Analysis (IIBA) 2026 Report",
-      moreInfoLink: "https://www.iiba.org/",
+      moreInfoLink: "https://app.ohr.psu.edu/JobCatalog/job/view/jobCode/PSU1828",
       interviewPrep: [
         {
           type: "Technical", question: "Explain the difference between a functional and non-functional requirement.",
@@ -854,7 +854,7 @@
       entryLevel: "Interns and entry-level analysts are expected to write complex SQL queries (Joins, CTEs, Window functions), manipulate data in Python (Pandas) or R, and have a foundational grasp of statistics and data visualization best practices.",
       strongCandidate: "A top-tier data professional doesn't just hand over a spreadsheet; they hand over a recommendation. They have sharp business acumen, can spot when data is skewed or biased, and excel at explaining complex statistical concepts to non-technical executives.",
       source: "Burtch Works Study 2026",
-      moreInfoLink: "https://www.kdnuggets.com/",
+      moreInfoLink: "https://www.ie.edu/uncover-ie/what-does-a-data-analyst-do-career-path-mbds/",
       interviewPrep: [
         {
           type: "Technical", question: "Explain the difference between a LEFT JOIN and an INNER JOIN.",
@@ -956,7 +956,7 @@
       entryLevel: "Entry-level coordinators should understand project management tools (Jira, Asana, MS Project), basic Agile/Scrum concepts, and have excellent organizational and meeting facilitation skills.",
       strongCandidate: "A stellar PM operates with high emotional intelligence. They act as a 'servant leader' who removes roadblocks for the technical team, and they excel at anticipating risks before they manifest.",
       source: "Project Management Institute (PMI) 2026 Salary Survey",
-      moreInfoLink: "https://www.pmi.org/",
+      moreInfoLink: "https://app.ohr.psu.edu/JobCatalog/job/view/jobCode/PSU1051",
       interviewPrep: [
         {
           type: "Technical", question: "Explain the Critical Path Method.",
@@ -1007,7 +1007,7 @@
       entryLevel: "Entry-level designers need proficiency in Figma, an understanding of core design heuristics, and knowledge of basic user research techniques. A strong portfolio demonstrating your thought process is required.",
       strongCandidate: "A great UX professional relies on data, not just intuition. They can gracefully defend a design decision, accept critical feedback without ego, and balance user needs against technical constraints.",
       source: "Nielsen Norman Group 2026 Industry Report",
-      moreInfoLink: "https://www.nngroup.com/",
+      moreInfoLink: "https://www.roberthalf.com/us/en/insights/career-development/hot-job-ux-designer",
       interviewPrep: [
         {
           type: "Technical", question: "What is the difference between quantitative and qualitative user research?",
@@ -1058,7 +1058,7 @@
       entryLevel: "Entry-level consultants often need basic business process knowledge (e.g., Procure-to-pay, Lead-to-cash) and foundational certifications in their chosen platform, such as Salesforce Administrator.",
       strongCandidate: "A top ERP consultant bridges the gap between raw business operations and technical platform capabilities. They understand the business's industry deeply and know when to use standard out-of-the-box features versus building custom code.",
       source: "Mason Frank & ASUG 2026 Compensation Surveys",
-      moreInfoLink: "https://trailhead.salesforce.com/",
+      moreInfoLink: "https://msdynamicsworld.com/blog-post/what-does-erp-consultant-do-roles-responsibilities-and-roi-explained",
       interviewPrep: [
         {
           type: "Technical", question: "When would you recommend building a custom object/table instead of using a standard one?",
@@ -1109,7 +1109,7 @@
       entryLevel: "Entry-level cloud engineers must have strong Linux command line skills, a solid understanding of networking (IP, DNS, Subnets), basic scripting (Python/Bash), and familiarity with core cloud primitives (compute, storage).",
       strongCandidate: "A top-tier cloud engineer treats infrastructure as version-controlled software. They focus relentlessly on automation, architect for high availability and disaster recovery, and keep a sharp eye on optimizing cloud costs.",
       source: "State of Cloud Strategy Report 2026",
-      moreInfoLink: "https://aws.amazon.com/training/",
+      moreInfoLink: "https://www.wgu.edu/career-guide/information-technology/cloud-engineer-career.html",
       interviewPrep: [
         {
           type: "Technical", question: "Explain the difference between IaaS, PaaS, and SaaS.",
@@ -1171,7 +1171,21 @@
 
   jobSelect.addEventListener('change', () => {
     const key = jobSelect.value;
-    if (key){ showJobPage(key); }
+    if (key){ 
+      showJobPage(key); 
+    } else {
+      // Go back to the start page to retake the quiz
+      answers.fill(null);
+      current = 0;
+      jobFlow.classList.add('hidden');
+      interviewFlow.classList.add('hidden');
+      quizPanel.classList.add('hidden');
+      resultPanel.classList.add('hidden');
+      quizFlow.classList.remove('hidden');
+      introPanel.classList.remove('hidden');
+      statusLine.textContent = "DRAFT / IN PROGRESS";
+      window.scrollTo({top:0, behavior: 'instant' in window ? 'instant' : 'auto'});
+    }
   });
 
   logoBtn.addEventListener('click', () => {
