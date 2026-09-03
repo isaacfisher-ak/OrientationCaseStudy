@@ -42,6 +42,16 @@
   }
 
   a{ color: inherit; }
+  a.external-link {
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--amber);
+    transition: all 0.2s ease;
+  }
+  a.external-link:hover {
+    color: var(--paper);
+    border-bottom-color: var(--paper);
+  }
 
   /* ---------- Top nav bar ---------- */
   .navbar{
@@ -181,7 +191,7 @@
   .progress-row{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:flex-start;
     margin-bottom: 30px;
     font-family: var(--font-mono);
     font-size: 12px;
@@ -482,6 +492,48 @@
   }
   .subhead:first-of-type{ margin-top: 4px; }
 
+  /* ---------- Interview Prep Page ---------- */
+  .interview-card {
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    padding: 24px;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.02);
+  }
+  textarea.prep-area {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--line-strong);
+    color: var(--paper);
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  textarea.prep-area:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  textarea.prep-area:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    border-color: var(--line-soft);
+  }
+  .feedback-block {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--line-strong);
+    animation: fadeIn 0.4s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   @media (max-width: 480px){
     .intro-list{ grid-template-columns: 1fr; }
     .node-label{ display:none; }
@@ -518,13 +570,13 @@
     </div>
 
     <h1 class="title">Find the IT role built for you.</h1>
-    <p class="sub">Twelve short statements about how you like to work. Answer honestly — there's no scoring for "right," only for "you." Then get matched to one of eight IT career paths.</p>
+    <p class="sub">Twenty short statements about how you like to work. Answer honestly — there's no scoring for "right," only for "you." Then get matched to one of eight IT career paths.</p>
 
     <!-- INTRO PANEL -->
     <div class="panel" id="introPanel">
       <div class="result-eyebrow">BEFORE YOU START</div>
       <p style="font-size:15px; line-height:1.6; color:var(--paper-dim); margin:0 0 24px;">
-        For each statement, choose how much you agree — from strongly disagree to strongly agree. Takes about two minutes. Prefer to browse instead? Use the role menu in the top-right corner any time.
+        For each statement, choose how much you agree — from strongly disagree to strongly agree. Takes about three minutes. Prefer to browse instead? Use the role menu in the top-right corner any time.
       </p>
       <ul class="intro-list">
         <li>Software / Application Developer</li>
@@ -544,9 +596,8 @@
     <!-- QUIZ PANEL -->
     <div class="panel hidden" id="quizPanel">
       <div class="progress-row">
-        <span class="q-index" id="qIndex">Q1 / 12</span>
+        <span class="q-index" id="qIndex">Q1 / 20</span>
         <div class="trace"><div class="trace-fill" id="traceFill"></div></div>
-        <span id="qTag">DEV</span>
       </div>
 
       <div class="q-text" id="qText"></div>
@@ -567,7 +618,7 @@
 
       <div class="bars" id="bars"></div>
 
-      <p class="result-cta">Click any role above to see full salary data and how to break in.</p>
+      <p class="result-cta">Click any role above to see full details and practice for interviews.</p>
 
       <div class="nav-row" style="justify-content:flex-start;">
         <button class="ghost" id="retakeBtn">↺ Retake the quiz</button>
@@ -583,6 +634,15 @@
     </div>
     <div class="panel wide" id="jobPanel"></div>
   </div>
+  
+  <!-- INTERVIEW PREP PAGE -->
+  <div class="stage hidden" id="interviewFlow" style="padding:0; min-height:auto;">
+    <div class="masthead">
+      <span>FIG. 03 — <b>INTERVIEW PREP</b></span>
+      <span>PRACTICE MODULE</span>
+    </div>
+    <div class="panel wide" id="interviewPanel"></div>
+  </div>
 
 </div>
 
@@ -597,73 +657,28 @@
     "Strongly agree"
   ];
 
-  // Each question has a primary role (full weight) and optionally a
-  // secondary role (half weight). Values run 1–5 on the Likert scale.
+  // 20 Questions
   const QUESTIONS = [
-    {
-      tag: "DEV",
-      text: "I enjoy writing code to build applications, tools, or automate tasks.",
-      primary: "dev"
-    },
-    {
-      tag: "BA",
-      text: "I like translating a business problem into clear requirements someone else can build.",
-      primary: "ba"
-    },
-    {
-      tag: "DATA",
-      text: "I enjoy digging through data to find patterns, trends, or build predictive models.",
-      primary: "data"
-    },
-    {
-      tag: "SEC",
-      text: "I'm drawn to finding security weaknesses and figuring out how to defend against them.",
-      primary: "sec"
-    },
-    {
-      tag: "PM",
-      text: "I like planning timelines, tracking tasks, and keeping a team moving toward a deadline.",
-      primary: "pm"
-    },
-    {
-      tag: "UX",
-      text: "I enjoy researching how people use a product and designing something more intuitive.",
-      primary: "ux"
-    },
-    {
-      tag: "ERP",
-      text: "I like configuring large business platforms (like SAP or Salesforce) to match how a company actually works.",
-      primary: "erp"
-    },
-    {
-      tag: "CLOUD",
-      text: "I enjoy managing servers, networks, or cloud infrastructure so everything stays up and running.",
-      primary: "cloud"
-    },
-    {
-      tag: "PM",
-      text: "I'd rather coordinate people and communicate with stakeholders than write technical code myself.",
-      primary: "pm",
-      secondary: "ba"
-    },
-    {
-      tag: "DEV",
-      text: "I like solving logic puzzles and methodically tracking down the cause of a bug.",
-      primary: "dev",
-      secondary: "sec"
-    },
-    {
-      tag: "UX",
-      text: "I care a lot about how something looks and feels, and I notice bad design immediately.",
-      primary: "ux",
-      secondary: "data"
-    },
-    {
-      tag: "CLOUD",
-      text: "I'm comfortable with ambiguous, constantly changing systems and enjoy learning new tools as they appear.",
-      primary: "cloud",
-      secondary: "erp"
-    }
+    { text: "I enjoy writing code to build applications, tools, or automate tasks.", primary: "dev" },
+    { text: "I like translating a business problem into clear requirements someone else can build.", primary: "ba" },
+    { text: "I enjoy digging through data to find patterns, trends, or build predictive models.", primary: "data" },
+    { text: "I'm drawn to finding security weaknesses and figuring out how to defend against them.", primary: "sec" },
+    { text: "I like planning timelines, tracking tasks, and keeping a team moving toward a deadline.", primary: "pm" },
+    { text: "I enjoy researching how people use a product and designing something more intuitive.", primary: "ux" },
+    { text: "I like configuring large business platforms (like SAP or Salesforce) to match how a company actually works.", primary: "erp" },
+    { text: "I enjoy managing servers, networks, or cloud infrastructure so everything stays up and running.", primary: "cloud" },
+    { text: "I'd rather coordinate people and communicate with stakeholders than write technical code myself.", primary: "pm", secondary: "ba" },
+    { text: "I like solving logic puzzles and methodically tracking down the cause of a bug.", primary: "dev", secondary: "sec" },
+    { text: "I care a lot about how something looks and feels, and I notice bad design immediately.", primary: "ux", secondary: "data" },
+    { text: "I'm comfortable with ambiguous, constantly changing systems and enjoy learning new tools as they appear.", primary: "cloud", secondary: "erp" },
+    { text: "I am interested in ensuring that large enterprise systems talk to each other correctly and reliably.", primary: "erp" },
+    { text: "I like making sure software systems don't break when a massive number of people try to use them at once.", primary: "cloud" },
+    { text: "I am fascinated by how hackers exploit systems and want to be the one who stops them.", primary: "sec" },
+    { text: "I prefer working with executives and stakeholders to figure out project budgets and schedules.", primary: "pm" },
+    { text: "I enjoy designing visual elements and mapping out logical user flows.", primary: "ux" },
+    { text: "I like crunching numbers to predict future business trends or customer behaviors.", primary: "data" },
+    { text: "I want to document how a business operates step-by-step in order to find process inefficiencies.", primary: "ba" },
+    { text: "I love learning new programming languages and building software features completely from scratch.", primary: "dev" }
   ];
 
   const ROLES = {
@@ -698,7 +713,7 @@
       desc: "You care about the human on the other side of the screen. You'd likely enjoy researching user needs, designing intuitive experiences, and shaping what a product should become."
     },
     erp: {
-      name: "ERP / Systems Consultant (e.g., SAP, Salesforce)",
+      name: "ERP / Systems Consultant",
       short: "ERP Consultant",
       desc: "You like configuring big systems to fit how a real business actually operates. You'd likely enjoy implementation work — customizing platforms like SAP or Salesforce around a company's processes."
     },
@@ -709,13 +724,10 @@
     }
   };
 
-  // Detailed dossier content per role, sourced from public salary
-  // aggregators (ZipRecruiter, Glassdoor, Salary.com) as of 2026.
   const DETAILS = {
-
     dev: {
       salaryFigure: "$110,000 – $150,000/yr",
-      salaryNote: "Reported averages vary a lot by title: ZipRecruiter puts general \"Software Developer\" at roughly $112,000, while Glassdoor's broader \"Software Engineer\" figure runs closer to $148,000. Specialized backend or platform roles trend toward the higher end.",
+      salaryNote: "Reported averages vary a lot by title: ZipRecruiter puts general 'Software Developer' at roughly $112,000, while Glassdoor's broader 'Software Engineer' figure runs closer to $148,000. Specialized backend or platform roles trend toward the higher end.",
       ranges: [
         {label:"Entry-level", value:"$65,000 – $92,000"},
         {label:"Mid-career", value:"$110,000 – $150,000"},
@@ -729,27 +741,39 @@
         "Reviewing teammates' code and incorporating feedback on your own",
         "Working within an Agile/Scrum process — sprints, standups, retros",
         "Designing and integrating APIs and databases",
-        "Writing automated tests and fixing bugs found in production",
-        "Documenting how systems work for future maintainers",
-        "Collaborating with designers, product managers, and QA"
+        "Writing automated tests and fixing bugs found in production"
       ],
       skills: [
         "Solid grounding in at least one language (JavaScript, Python, Java, C#, etc.)",
         "Data structures and algorithms fundamentals",
         "Git and collaborative version control workflows",
-        "A framework relevant to your track (React/Angular for front-end, Spring/.NET/Django for back-end)",
-        "Working SQL and database design knowledge",
-        "Familiarity with testing practices and CI/CD pipelines",
-        "Basic cloud/deployment literacy (most teams ship to AWS, Azure, or GCP)"
+        "Working SQL and database design knowledge"
       ],
-      certs: "This field weighs a portfolio and interview performance more heavily than certifications. That said, credentials like AWS Certified Developer, Microsoft's Azure Developer Associate, or language-specific certs (Oracle Java, Meta's front-end certificates) can help you stand out, especially without a CS degree.",
-      path: [
-        "Learn a language deeply rather than skimming several — build real, finished projects with it",
-        "A CS degree helps but isn't required; bootcamps and self-taught paths are common entry points",
-        "Build a public portfolio (GitHub, deployed side-projects) that shows you can ship something end-to-end",
-        "Practice technical interviewing — most hiring processes test data structures/algorithms directly",
-        "Start in a junior developer, QA, or support engineering role to build production experience",
-        "Specialize over time: front-end, back-end, mobile, full-stack, or platform/infrastructure-leaning work"
+      entryLevel: "Entry-level candidates or interns are expected to understand basic syntax in one primary language, how to use Git for basic version control (commit, push, pull, branch), and the fundamentals of object-oriented or functional programming. You should be able to write simple algorithms and query a database.",
+      strongCandidate: "A standout candidate doesn't just write working code; they write maintainable code. They communicate technical tradeoffs clearly, document their work, ask great questions during code reviews, and show a genuine curiosity about how the broader system functions.",
+      source: "U.S. Bureau of Labor Statistics & StackOverflow Developer Survey 2026",
+      moreInfoLink: "https://roadmap.sh/software-design-architecture",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a REST API and GraphQL.",
+          sampleAnswer: "REST uses multiple endpoints to fetch specific data structures, which can lead to over-fetching or under-fetching data. GraphQL exposes a single endpoint and allows the client to request exactly the shape and fields of data it needs.",
+          keyElements: ["Mentioning multiple endpoints (REST) vs single endpoint (GraphQL)", "Explaining over-fetching/under-fetching", "Highlighting that GraphQL transfers control over the data payload to the client"]
+        },
+        {
+          type: "Technical", question: "How would you approach finding a memory leak in a web application?",
+          sampleAnswer: "I would start by using the browser's DevTools, specifically taking heap snapshots before and after an action to see what objects aren't being garbage collected. I'd look for unremoved event listeners, detached DOM nodes, or global variable pollution.",
+          keyElements: ["Mentioning specific profiling tools (e.g., Chrome DevTools Heap Snapshot)", "Identifying common causes (event listeners, closures)", "Describing a systematic isolation approach"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you missed a deadline or realized you weren't going to finish a task in time.",
+          sampleAnswer: "During my last project, I underestimated the complexity of a database migration. Once I realized I was a day behind, I immediately alerted my project manager. We worked together to descop a non-essential feature for that sprint, ensuring the core migration still shipped on time. I learned to break database tasks into smaller estimates.",
+          keyElements: ["Taking immediate ownership and communicating early", "Focusing on solutions (descoping/reprioritizing) rather than hiding the problem", "Sharing the lesson learned to prevent future occurrences"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time you disagreed with a senior developer's technical design.",
+          sampleAnswer: "A senior dev suggested using a complex microservice architecture for a simple internal tool. I felt a monolith would be faster to build and maintain. I brought it up in a 1-on-1, acknowledging their expertise, but presenting a quick chart showing our tight deadline and small team size. They agreed to start with a monolith and scale later.",
+          keyElements: ["Addressing the disagreement respectfully and privately", "Using objective data (time, team size) rather than emotional arguments", "Demonstrating a willingness to compromise or find a middle ground"]
+        }
       ]
     },
 
@@ -762,268 +786,351 @@
         {label:"Senior", value:"$130,000 – $180,000"},
         {label:"Top 10% (90th pctile)", value:"$186,000 – $259,000"}
       ],
-      whatItIs: "A Business or Systems Analyst sits between the business side of an organization and the technical teams building its systems. The job is translation: understanding what a department actually needs, documenting it clearly, and making sure whatever gets built (or bought) genuinely solves the underlying problem — not just what was asked for on the surface.",
+      whatItIs: "A Business or Systems Analyst sits between the business side of an organization and the technical teams building its systems. The job is translation: understanding what a department actually needs, documenting it clearly, and making sure whatever gets built genuinely solves the underlying problem.",
       tasks: [
         "Interviewing stakeholders to elicit and clarify business requirements",
-        "Mapping current and future-state business processes (often in Visio or Lucidchart)",
+        "Mapping current and future-state business processes",
         "Writing user stories, functional specs, and acceptance criteria",
         "Facilitating requirements workshops between business units and IT",
-        "Running light data analysis to support a business case or recommendation",
-        "Planning and executing user acceptance testing (UAT)",
-        "Producing documentation and training materials for new systems",
-        "Supporting the rollout of new software or process changes"
+        "Planning and executing user acceptance testing (UAT)"
       ],
       skills: [
-        "Strong written and verbal communication — you're the translator in the room",
+        "Strong written and verbal communication",
         "Requirements documentation and process modeling (BPMN, flowcharts)",
         "Working SQL and Excel for lightweight data analysis",
-        "Comfort with both Agile/Scrum and traditional Waterfall delivery",
-        "Stakeholder management and facilitation skills",
-        "A general understanding of the software development lifecycle (SDLC)"
+        "Comfort with Agile/Scrum delivery"
       ],
-      certs: "Certifications carry real weight here: the IIBA's CCBA and CBAP are the most recognized business-analysis credentials, PMI offers a PMI-PBA for the more technical end of the role, and a Certified ScrumMaster (CSM) is useful if you'll work in Agile teams.",
-      path: [
-        "A business, IT, or related degree is common, though not mandatory",
-        "Many BAs start in operations, support, or QA roles and move sideways into analysis",
-        "Build documentation samples (even from a personal or volunteer project) to show your process",
-        "Earn a CCBA or CSM once you have some hands-on requirements experience",
-        "Grow domain expertise in a specific industry (finance, healthcare, retail) — it compounds your value",
-        "Progress toward Senior BA, BA lead, or Product Owner as you take on bigger initiatives"
+      entryLevel: "Entry-level candidates should be highly proficient in Excel, know basic SQL to query data for analysis, understand the Software Development Life Cycle (SDLC), and demonstrate the ability to write clear, structured documentation.",
+      strongCandidate: "A strong candidate is an expert at stakeholder management. They can say 'no' to bad ideas politely, they dig past what a user *says* they want to find what they *actually* need, and they can simplify complex technical constraints for business leaders.",
+      source: "International Institute of Business Analysis (IIBA) 2026 Report",
+      moreInfoLink: "https://app.ohr.psu.edu/JobCatalog/job/view/jobCode/PSU1828",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a functional and non-functional requirement.",
+          sampleAnswer: "A functional requirement defines what a system must do (e.g., 'The user must be able to log in with an email and password'). A non-functional requirement defines how the system should perform that function (e.g., 'The login page must load in under 2 seconds').",
+          keyElements: ["Clear definitions of both terms", "Providing a concrete example for functional (the 'what')", "Providing a concrete example for non-functional (the 'how')"]
+        },
+        {
+          type: "Technical", question: "Walk me through how you would create a process map for a company's onboarding flow.",
+          sampleAnswer: "First, I'd identify the boundaries: where does onboarding start and end. Then, I'd interview the HR, IT, and hiring managers to gather the steps. I'd draft a swimlane diagram showing actions, decisions, and systems involved. Finally, I'd review it with the stakeholders to ensure accuracy before finalizing.",
+          keyElements: ["Mentioning boundaries/scope definition", "Highlighting the interview/elicitation phase", "Using standard terminology like 'swimlane diagram' and validating with stakeholders"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle a stakeholder who frequently changes their requirements mid-project?",
+          sampleAnswer: "I acknowledge their request but immediately communicate the impact on the timeline and budget. I use a change-control process: I document the new requirement, estimate the delay it will cause, and present the trade-off. Often, when they see the cost in time, they decide to defer the change to a phase two.",
+          keyElements: ["Emphasizing impact analysis (time/budget)", "Using a formal change management/control process", "Offering phase-two/backlog as a compromise"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you had to gather requirements for a topic you knew nothing about.",
+          sampleAnswer: "I was assigned to a financial compliance project. Before interviewing stakeholders, I spent a day researching basic terminology and reviewing existing company docs. In the meetings, I was honest about my knowledge gaps and asked them to explain things as if I were a new hire. Taking detailed notes and repeating concepts back to them ensured we were aligned.",
+          keyElements: ["Doing preliminary research before meetings", "Showing humility and willingness to ask clarifying questions", "Using active listening ('repeating back') to verify understanding"]
+        }
       ]
     },
 
     data: {
       salaryFigure: "$85,000 – $160,000/yr",
-      salaryNote: "This is really two salary bands in one title. Data Analyst averages sit around $83,000–$94,000 (ZipRecruiter, Glassdoor). Data Scientist — the more advanced, modeling-heavy version of the role — averages $123,000–$158,000, with total comp climbing well past $200,000 at senior/ML-focused levels.",
+      salaryNote: "Data Analyst averages sit around $83,000–$94,000. Data Scientist — the more advanced, modeling-heavy version of the role — averages $123,000–$158,000, with total comp climbing well past $200,000 at senior levels.",
       ranges: [
         {label:"Entry (Analyst)", value:"$58,000 – $76,000"},
         {label:"Mid (Analyst/Jr. Scientist)", value:"$85,000 – $120,000"},
         {label:"Senior (Data Scientist)", value:"$140,000 – $180,000"},
         {label:"Top 10% (90th pctile)", value:"$173,000 – $270,000+"}
       ],
-      whatItIs: "A Data Analyst turns raw data into decisions — pulling numbers, cleaning them up, and building reports or dashboards that answer a specific business question. A Data Scientist takes this further, building statistical and machine-learning models to predict outcomes rather than just describe them. Most people enter through the analyst door and grow into data science as their statistics and programming depth increases.",
+      whatItIs: "A Data Analyst turns raw data into decisions — pulling numbers, cleaning them up, and building reports. A Data Scientist takes this further, building statistical models to predict outcomes. Most enter through analytics and grow into data science.",
       tasks: [
         "Writing SQL queries to pull and join data from multiple sources",
         "Cleaning and reshaping messy, incomplete, or inconsistent datasets",
-        "Building dashboards and reports (Tableau, Power BI, Looker)",
-        "Running statistical analysis to test a hypothesis or explain a trend",
-        "Building and validating predictive or machine-learning models (data scientist track)",
-        "Designing and interpreting A/B tests",
-        "Presenting findings to non-technical stakeholders in plain language",
-        "Partnering with engineering on data pipeline and infrastructure needs"
+        "Building dashboards and reports (Tableau, Power BI)",
+        "Running statistical analysis to test a hypothesis",
+        "Presenting findings to non-technical stakeholders in plain language"
       ],
       skills: [
         "SQL — genuinely non-negotiable for this role",
-        "Python or R for analysis, and for data science, machine-learning libraries (scikit-learn, PyTorch)",
+        "Python or R for analysis",
         "Statistics fundamentals: distributions, hypothesis testing, regression",
-        "A visualization tool (Tableau or Power BI are the most commonly requested)",
-        "Excel, still widely used for quick analysis and stakeholder-facing work",
-        "The ability to explain technical findings to a non-technical audience clearly"
+        "A visualization tool (Tableau or Power BI)"
       ],
-      certs: "The Google Data Analytics Professional Certificate and Microsoft's Power BI certification are common, accessible entry points. For the data-science track, IBM's Data Science Professional Certificate and AWS Certified Machine Learning – Specialty carry more weight as you advance.",
-      path: [
-        "A background in math, statistics, economics, or CS helps, but isn't required with the right portfolio",
-        "Build projects that show the full pipeline: pulling data, cleaning it, analyzing it, and presenting a conclusion",
-        "Start as a data or business analyst to build SQL and stakeholder-communication muscle",
-        "Deepen statistics and add machine-learning coursework or a master's degree to move toward data science",
-        "Specialize as you grow: analytics engineering, applied science, or machine-learning engineering"
+      entryLevel: "Interns and entry-level analysts are expected to write complex SQL queries (Joins, CTEs, Window functions), manipulate data in Python (Pandas) or R, and have a foundational grasp of statistics and data visualization best practices.",
+      strongCandidate: "A top-tier data professional doesn't just hand over a spreadsheet; they hand over a recommendation. They have sharp business acumen, can spot when data is skewed or biased, and excel at explaining complex statistical concepts to non-technical executives.",
+      source: "Burtch Works Study 2026",
+      moreInfoLink: "https://www.ie.edu/uncover-ie/what-does-a-data-analyst-do-career-path-mbds/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between a LEFT JOIN and an INNER JOIN.",
+          sampleAnswer: "An INNER JOIN returns only the rows where there is a match in both tables. A LEFT JOIN returns all the rows from the left table, and the matched rows from the right table; if there's no match, the result will contain NULL values for the right table's columns.",
+          keyElements: ["Accurate definition of INNER JOIN (intersection)", "Accurate definition of LEFT JOIN (all left, matching right)", "Mentioning NULL values for unmatched records"]
+        },
+        {
+          type: "Technical", question: "How would you explain a p-value to a non-technical marketing manager?",
+          sampleAnswer: "I would say: 'A p-value helps us measure if a result was just a fluke. If the p-value is very low (usually under 0.05), it means it's highly unlikely that this result happened by chance, so we can be confident our new marketing campaign actually worked.'",
+          keyElements: ["Avoiding overly academic statistical jargon", "Using a practical business analogy (e.g., 'a fluke' or 'by chance')", "Connecting it to a business outcome (confidence in a decision)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time your data analysis yielded a result the business didn't want to hear.",
+          sampleAnswer: "I analyzed a newly launched feature and found user engagement actually dropped by 10%. The product team was heavily invested in it. I presented the data objectively, showing exactly how I measured the drop, but also paired the bad news with insights on *where* users were dropping off, offering a path to fix it rather than just a roadblock.",
+          keyElements: ["Maintaining data integrity despite pressure", "Presenting findings objectively and transparently", "Offering actionable next steps rather than just delivering bad news"]
+        },
+        {
+          type: "Behavioral", question: "Describe a situation where you had to work with extremely messy or incomplete data.",
+          sampleAnswer: "We received a client dataset with varying date formats, missing ZIP codes, and duplicate entries. I wrote a Python script using Pandas to standardize the dates, used a lookup table to fill in obvious missing ZIPs, and established a rule to deduplicate based on user ID and latest timestamp. I also documented these cleaning rules so stakeholders knew exactly what assumptions were made.",
+          keyElements: ["Describing specific tools used to clean (e.g., Pandas, Regex)", "Explaining the logical rules applied (deduplication logic)", "Documenting assumptions so stakeholders understand the data's limitations"]
+        }
       ]
     },
 
     sec: {
       salaryFigure: "$100,000 – $135,000/yr",
-      salaryNote: "ZipRecruiter's broad average sits near $99,000; Glassdoor and industry aggregators that include senior/specialized titles report $128,000–$136,000. The single biggest swing factor is seniority — entry-level SOC work and senior incident response are priced very differently under the same job title.",
+      salaryNote: "ZipRecruiter's broad average sits near $99,000; industry aggregators that include senior/specialized titles report $128,000–$136,000. Entry-level SOC work and senior incident response are priced differently.",
       ranges: [
         {label:"Entry-level (SOC Tier 1)", value:"$55,000 – $91,500"},
         {label:"Mid-career", value:"$95,000 – $148,000"},
         {label:"Senior", value:"$130,000 – $196,000"},
         {label:"Top 10% (90th pctile)", value:"$137,000 – $297,000"}
       ],
-      whatItIs: "A Cybersecurity Analyst protects an organization's systems and data from attack. Day to day, that means watching for suspicious activity, investigating and responding to incidents, and continuously hardening defenses — a mix of vigilant monitoring, technical detective work, and clear incident reporting.",
+      whatItIs: "A Cybersecurity Analyst protects an organization's systems and data from attack. Day to day, that means watching for suspicious activity, investigating incidents, and continuously hardening defenses.",
       tasks: [
         "Monitoring SIEM tools (Splunk, QRadar) for suspicious activity",
         "Investigating and responding to security incidents and alerts",
-        "Running or reviewing vulnerability scans and remediation plans",
+        "Running or reviewing vulnerability scans",
         "Managing firewalls, endpoint protection, and identity/access controls",
-        "Conducting risk assessments against frameworks like NIST or ISO 27001",
-        "Writing incident reports and post-incident reviews",
-        "Staying current on emerging threats and attack techniques",
-        "Supporting security awareness training for other employees"
+        "Writing incident reports and post-incident reviews"
       ],
       skills: [
         "Solid networking fundamentals (TCP/IP, firewalls, DNS)",
         "Comfort administering both Windows and Linux systems",
         "SIEM and log-analysis tool experience",
-        "Understanding of common attack patterns: phishing, malware, ransomware",
-        "Scripting (Python or Bash) to automate detection and response tasks",
-        "Familiarity with identity and access management concepts"
+        "Understanding of common attack patterns (OWASP Top 10)"
       ],
-      certs: "CompTIA Security+ is the standard entry-level credential and is often listed as a hard requirement. CompTIA CySA+ and Certified Ethical Hacker (CEH) build on it, and GIAC certifications (GSEC, GCIH) or the CISSP become relevant once you're aiming for senior or leadership roles.",
-      path: [
-        "IT helpdesk, sysadmin, or network roles are the most common on-ramp into security",
-        "Earn Security+ early — it's often the gate to even being considered",
-        "Practice in a home lab or on platforms like TryHackMe or HackTheBox to build hands-on skill",
-        "Start as a SOC Tier 1 analyst monitoring alerts and escalating incidents",
-        "Move into Tier 2/3 incident response, or specialize in cloud security, threat intelligence, or GRC",
-        "Pursue CISSP once you have several years of experience, for senior or leadership tracks"
+      entryLevel: "Entry-level candidates typically need to know core networking (OSI model, TCP/IP, Ports), basic Linux command line, common malware types, and the principles of the CIA triad (Confidentiality, Integrity, Availability).",
+      strongCandidate: "A great security analyst stays calm under extreme pressure. They are naturally curious, constantly research new threat vectors in their free time, and understand that security must balance with business productivity.",
+      source: "SANS Institute & CyberSeek 2026",
+      moreInfoLink: "https://www.sans.org/",
+      interviewPrep: [
+        {
+          type: "Technical", question: "What happens exactly when you type google.com into your browser and press Enter?",
+          sampleAnswer: "The browser checks its cache for the IP address. If not found, it queries the OS, then the router, then the ISP's DNS to resolve the domain to an IP. Once the IP is found, the browser initiates a TCP handshake (SYN, SYN-ACK, ACK) with the server. Then, a TLS handshake secures the connection, and an HTTP GET request is sent to fetch the webpage.",
+          keyElements: ["Mentioning DNS resolution", "Describing the TCP 3-way handshake", "Including the TLS/SSL handshake for HTTPS security"]
+        },
+        {
+          type: "Technical", question: "Explain Cross-Site Scripting (XSS) and how to prevent it.",
+          sampleAnswer: "XSS occurs when an application includes untrusted data in a web page without proper validation or escaping, allowing an attacker to execute malicious scripts in the victim's browser. It can be prevented by strictly sanitizing and validating user input on the server side, and contextually output-encoding data before rendering it.",
+          keyElements: ["Defining XSS as executing malicious scripts in a victim's browser", "Identifying the root cause (untrusted input)", "Stating prevention methods (input validation, output encoding)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you had to explain a complex security risk to a non-technical manager.",
+          sampleAnswer: "We had an outdated server vulnerable to a known exploit. Instead of talking about buffer overflows and CVE scores, I explained it to the operations director like a physical building: 'We have a side door with a broken lock. It might be fine for a while, but if someone finds it, they bypass the front desk entirely.' They immediately approved the downtime to patch it.",
+          keyElements: ["Avoiding technical jargon (CVEs, specific exploit mechanics)", "Using relatable, real-world analogies (locks, doors, alarms)", "Focusing on the business risk (data loss, downtime) rather than the technical vulnerability"]
+        },
+        {
+          type: "Behavioral", question: "How would you handle receiving a critical IDS alert at 2 AM on a Saturday?",
+          sampleAnswer: "First, I'd verify if it's a true positive or a false alarm by checking the logs and correlating data. If it's a legitimate threat, I would follow our incident response playbook: isolating the affected system from the network to contain the threat, documenting my findings, and escalating to the on-call incident commander immediately.",
+          keyElements: ["Verifying the alert first (avoiding panic over false positives)", "Following established procedures/playbooks", "Taking immediate containment action (isolation) before escalation"]
+        }
       ]
     },
 
     pm: {
       salaryFigure: "$100,000 – $140,000/yr",
-      salaryNote: "ZipRecruiter's active-postings average is around $114,000; Glassdoor's total-compensation figure runs higher, near $130,000–$139,000. PMI's own research found PMP-certified project managers earn roughly a third more than uncertified peers in the same role.",
+      salaryNote: "ZipRecruiter's active-postings average is around $114,000; Glassdoor's total-compensation figure runs near $130,000–$139,000. PMP-certified project managers earn roughly a third more.",
       ranges: [
         {label:"Entry (Coordinator)", value:"$55,000 – $80,000"},
         {label:"Mid-career (3–7 yrs)", value:"$100,000 – $130,000"},
-        {label:"Senior (10+ yrs / PMO)", value:"$145,000 – $176,000"},
+        {label:"Senior (10+ yrs)", value:"$145,000 – $176,000"},
         {label:"Top 10% (90th pctile)", value:"$140,000 – $217,000+"}
       ],
-      whatItIs: "An IT Project Manager plans, coordinates, and delivers technology projects on time and within budget. The job is less about writing code or configuring systems yourself and more about scope, schedule, risk, and communication — making sure the technical team, the business stakeholders, and the deadline all stay aligned.",
+      whatItIs: "An IT Project Manager plans, coordinates, and delivers technology projects on time and budget. The job is less about writing code yourself and more about scope, schedule, risk, and communication.",
       tasks: [
-        "Defining project scope, objectives, and success criteria with stakeholders",
+        "Defining project scope, objectives, and success criteria",
         "Building and maintaining project plans, timelines, and budgets",
         "Running standups, status meetings, and steering committee updates",
         "Tracking risks and issues, and escalating them before they become blockers",
-        "Managing vendor and contractor relationships",
-        "Facilitating Agile ceremonies (sprint planning, retros) on Agile-run teams",
-        "Reporting progress and outcomes to leadership",
-        "Closing out projects and capturing lessons learned"
+        "Facilitating Agile ceremonies (sprint planning, retros)"
       ],
       skills: [
-        "Project planning and scheduling (Gantt charts, critical path thinking)",
+        "Project planning and scheduling (Gantt charts, critical path)",
         "Budget management and resource allocation",
         "Risk identification and mitigation planning",
-        "Stakeholder communication — often the single most-used skill in the role",
-        "Fluency in both Waterfall and Agile/Scrum methodologies",
-        "Tooling: Jira, Asana, Microsoft Project, Confluence",
-        "Enough technical literacy to understand what the team is actually building"
+        "Fluency in both Waterfall and Agile/Scrum methodologies"
       ],
-      certs: "PMP (Project Management Professional) from PMI is the gold-standard credential in this field and comes with a documented pay premium. CAPM is a good entry-level alternative before you meet PMP's experience requirement, and Certified ScrumMaster (CSM) or PMI-ACP are valuable for Agile-heavy environments.",
-      path: [
-        "Many IT PMs start in a technical or coordination role — business analyst, developer, or QA",
-        "Take on informal project-coordination responsibilities to build a track record early",
-        "Earn a CAPM, then a PMP once you hit the required experience (roughly 3 years leading projects)",
-        "Build a portfolio of delivered projects you can speak to concretely in interviews",
-        "Advance toward Senior PM, Program Manager, or PMO Director as your project scope grows"
+      entryLevel: "Entry-level coordinators should understand project management tools (Jira, Asana, MS Project), basic Agile/Scrum concepts, and have excellent organizational and meeting facilitation skills.",
+      strongCandidate: "A stellar PM operates with high emotional intelligence. They act as a 'servant leader' who removes roadblocks for the technical team, and they excel at anticipating risks before they manifest.",
+      source: "Project Management Institute (PMI) 2026 Salary Survey",
+      moreInfoLink: "https://app.ohr.psu.edu/JobCatalog/job/view/jobCode/PSU1051",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the Critical Path Method.",
+          sampleAnswer: "The critical path is the longest sequence of dependent tasks in a project plan that must be completed on time for the project to finish by its deadline. If any task on the critical path is delayed, the entire project is delayed.",
+          keyElements: ["Defining it as the longest sequence of dependent tasks", "Connecting it directly to the final project deadline", "Noting that delays on this path delay the whole project"]
+        },
+        {
+          type: "Technical", question: "When would you choose an Agile approach over a Waterfall approach?",
+          sampleAnswer: "I'd choose Agile when requirements are uncertain, expected to change, or when we want to deliver value iteratively to get quick user feedback. Waterfall is better for projects with rigid constraints, strict regulatory requirements, or when the end goal is completely known and unlikely to change, like a hardware rollout.",
+          keyElements: ["Linking Agile to ambiguity and iterative feedback", "Linking Waterfall to fixed constraints and predictability", "Showing flexibility rather than dogmatic preference for one methodology"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time a project you were managing was going to miss its deadline. What did you do?",
+          sampleAnswer: "A key vendor was two weeks late delivering an API. I immediately called a meeting with the sponsor. I laid out three options: delay the launch by two weeks, launch on time but without the API integration (descope), or approve overtime budget to fast-track integration once it arrived. They chose to descope, and we launched on time.",
+          keyElements: ["Early detection and transparent communication", "Coming to leadership with options, not just problems", "Understanding the levers of project management (time, scope, budget)"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle scope creep from a senior stakeholder?",
+          sampleAnswer: "When a VP asked for a major new feature mid-sprint, I validated their idea but brought it back to the project charter. I estimated the time it would take and explained that adding it now would push our core launch back a month. I asked if they wanted to officially alter the project scope and budget, or add it to the phase-two backlog. They chose the backlog.",
+          keyElements: ["Validating the stakeholder's request so they feel heard", "Quantifying the impact of the change (time/money)", "Using the backlog as a constructive alternative to a flat 'no'"]
+        }
       ]
     },
 
     ux: {
       salaryFigure: "$95,000 – $140,000/yr",
-      salaryNote: "Glassdoor and ZipRecruiter both put the average UX Designer around $106,000–$108,000. Titles blur here — companies calling the same work \"Product Designer\" often post meaningfully higher bands, so it's worth checking both titles when you're job-hunting.",
+      salaryNote: "Glassdoor and ZipRecruiter put the average UX Designer around $106,000–$108,000. Companies calling the same work 'Product Designer' often post meaningfully higher bands.",
       ranges: [
         {label:"Entry-level", value:"$65,000 – $91,000"},
         {label:"Mid-career", value:"$95,000 – $130,000"},
         {label:"Senior", value:"$140,000 – $186,000"},
         {label:"Top 10% (90th pctile)", value:"$152,000 – $241,000+"}
       ],
-      whatItIs: "A UX Designer focuses on how a product feels and functions from the user's perspective — researching real needs, prototyping solutions, and refining them based on testing. A Product Manager (a common adjacent path) takes a step back to decide what a product should become in the first place. Both roles are fundamentally about advocating for the person on the other side of the screen.",
+      whatItIs: "A UX Designer focuses on how a product feels and functions from the user's perspective — researching real needs, prototyping solutions, and refining them based on testing.",
       tasks: [
         "Conducting user research: interviews, surveys, usability testing",
-        "Building wireframes and interactive prototypes (usually in Figma)",
-        "Creating user journey maps and personas to guide design decisions",
-        "Defining product requirements and roadmaps (more PM-leaning work)",
-        "Running and participating in design critiques",
+        "Building wireframes and interactive prototypes (Figma)",
+        "Creating user journey maps and personas",
         "Collaborating closely with engineers on implementation feasibility",
-        "Analyzing product usage data to see what's actually working",
         "Presenting design rationale and trade-offs to stakeholders"
       ],
       skills: [
-        "Prototyping tools — Figma is close to an industry standard now",
-        "User research methods and how to synthesize findings into decisions",
-        "Information architecture and interaction design fundamentals",
-        "Basic data literacy — knowing what to measure and why",
-        "For PM-leaning roles: prioritization frameworks and roadmapping",
-        "Strong storytelling — designs live or die on how well you can explain the reasoning behind them"
+        "Prototyping tools (Figma)",
+        "User research methods and synthesis",
+        "Information architecture and interaction design",
+        "Strong storytelling to explain design reasoning"
       ],
-      certs: "This field cares more about your portfolio than any certificate. That said, the Google UX Design Professional Certificate is a reasonable low-cost entry point, and a Certified Scrum Product Owner (CSPO) is useful if you're leaning toward the product-management side.",
-      path: [
-        "A portfolio of real case studies matters more here than a specific degree",
-        "Common entry paths include graphic design, psychology, or self-directed UX bootcamps",
-        "Start as a junior designer or associate PM working under someone more senior",
-        "Take ownership of increasingly ambiguous, larger problems as you grow",
-        "Progress toward Senior/Staff Designer, or shift into Product Manager if you enjoy the strategy side more than the craft"
+      entryLevel: "Entry-level designers need proficiency in Figma, an understanding of core design heuristics, and knowledge of basic user research techniques. A strong portfolio demonstrating your thought process is required.",
+      strongCandidate: "A great UX professional relies on data, not just intuition. They can gracefully defend a design decision, accept critical feedback without ego, and balance user needs against technical constraints.",
+      source: "Nielsen Norman Group 2026 Industry Report",
+      moreInfoLink: "https://www.roberthalf.com/us/en/insights/career-development/hot-job-ux-designer",
+      interviewPrep: [
+        {
+          type: "Technical", question: "What is the difference between quantitative and qualitative user research?",
+          sampleAnswer: "Quantitative research answers 'how many and how much' using hard numbers, like analytics data or A/B test results. Qualitative research answers 'why and how' using observational methods, like user interviews or think-aloud usability testing, to understand user motivations and pain points.",
+          keyElements: ["Correctly associating Quant with numbers/scale (the 'what/how much')", "Correctly associating Qual with observation/interviews (the 'why')", "Mentioning specific methods for each (A/B tests vs Interviews)"]
+        },
+        {
+          type: "Technical", question: "How do you ensure your designs are accessible?",
+          sampleAnswer: "I design with WCAG standards in mind from the start. This means checking color contrast ratios, ensuring typography is readable, providing alt-text guidelines for developers, and making sure interactive elements are easily navigable via keyboard and screen readers.",
+          keyElements: ["Mentioning WCAG (Web Content Accessibility Guidelines)", "Citing specific checks (color contrast, typography)", "Mentioning non-visual access (screen readers, keyboard navigation)"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time your design failed a usability test.",
+          sampleAnswer: "I designed an onboarding flow I thought was beautiful, but during testing, 4 out of 5 users couldn't find the 'Skip' button and got frustrated. I realized I prioritized aesthetics over clarity. I immediately revised the prototype to make the button high-contrast and moved it to the standard bottom-right position. Subsequent testing showed a 100% success rate.",
+          keyElements: ["Separating ego from the work", "Identifying the root cause of the failure", "Using the feedback to iterate and improve the design"]
+        },
+        {
+          type: "Behavioral", question: "How do you handle pushback from developers who say your design is too hard to implement?",
+          sampleAnswer: "I sit down with them to understand the specific technical constraint. Usually, they aren't rejecting the whole design, just a complex animation or custom component. Once I understand the limitation, we brainstorm together to find a UI compromise that still solves the user's problem but uses standard components that are faster to build.",
+          keyElements: ["Approaching developers as collaborators, not adversaries", "Seeking to understand the specific technical constraint", "Being willing to compromise on aesthetics to maintain functionality and delivery speed"]
+        }
       ]
     },
 
     erp: {
       salaryFigure: "$110,000 – $150,000/yr",
-      salaryNote: "SAP Consultant averages run $130,000–$151,000 depending on the source; Salesforce Consultant sits a bit lower at $119,000–$127,000. The title hides a lot of variation — pre-sales \"solution consultants\" who demo the platform are priced differently than functional consultants who actually configure it.",
+      salaryNote: "SAP Consultant averages run $130,000–$151,000; Salesforce Consultant sits at $119,000–$127,000. Pre-sales 'solution consultants' are priced differently than functional consultants.",
       ranges: [
         {label:"Entry-level", value:"$60,000 – $85,000"},
         {label:"Mid-career (functional)", value:"$100,000 – $135,000"},
         {label:"Senior", value:"$120,000 – $185,000"},
         {label:"Top 10% / Architect", value:"$180,000 – $250,000+"}
       ],
-      whatItIs: "An ERP or Systems Consultant implements and customizes large business platforms — SAP, Salesforce, Oracle, Workday, and similar — so the software matches how a specific company actually runs its finance, HR, sales, or supply-chain operations. It's part business analysis, part technical configuration, delivered through structured implementation projects.",
+      whatItIs: "An ERP Consultant customizes large business platforms (SAP, Salesforce, Workday) so the software matches how a specific company runs its operations. It's part business analysis, part technical configuration.",
       tasks: [
-        "Gathering requirements from business departments (finance, HR, sales, supply chain)",
+        "Gathering requirements from business departments",
         "Configuring modules, objects, and workflows within the platform",
         "Mapping and migrating data from legacy systems",
-        "Writing functional and technical specification documents",
-        "Testing configurations through user acceptance testing (UAT)",
-        "Training end users and producing documentation",
-        "Troubleshooting issues after go-live",
-        "Coordinating with developers on custom code (ABAP, Apex) when standard configuration isn't enough"
+        "Testing configurations through UAT",
+        "Training end users and producing documentation"
       ],
       skills: [
-        "Deep knowledge of one platform's modules (e.g., SAP FI/CO, MM, SD, or Salesforce Sales/Service Cloud)",
-        "Business-process knowledge in the function you support",
+        "Deep knowledge of one platform's modules",
+        "Business-process knowledge",
         "Requirements gathering and stakeholder facilitation",
-        "Configuration logic and light scripting ability",
-        "Data-migration experience",
-        "Project coordination — you're often part-consultant, part-project-manager"
+        "Configuration logic and data-migration experience"
       ],
-      certs: "This is one of the most certification-driven fields in IT. SAP Certified Application Associate credentials (module-specific), Salesforce Administrator and Salesforce Certified Consultant badges, Oracle Cloud certifications, and Workday Pro credentials are all used directly as hiring filters — employers explicitly screen for them.",
-      path: [
-        "Many consultants enter from a functional business role (finance, HR, sales ops) rather than a pure-IT background",
-        "Get certified on one platform early — Salesforce Administrator is a widely accessible starting point",
-        "Join an implementation partner or consulting firm to get reps across multiple client projects fast",
-        "Specialize in a module or vertical industry to become the go-to expert",
-        "Progress toward Solution Architect or Engagement/Program Lead as you take on larger implementations"
+      entryLevel: "Entry-level consultants often need basic business process knowledge (e.g., Procure-to-pay, Lead-to-cash) and foundational certifications in their chosen platform, such as Salesforce Administrator.",
+      strongCandidate: "A top ERP consultant bridges the gap between raw business operations and technical platform capabilities. They understand the business's industry deeply and know when to use standard out-of-the-box features versus building custom code.",
+      source: "Mason Frank & ASUG 2026 Compensation Surveys",
+      moreInfoLink: "https://msdynamicsworld.com/blog-post/what-does-erp-consultant-do-roles-responsibilities-and-roi-explained",
+      interviewPrep: [
+        {
+          type: "Technical", question: "When would you recommend building a custom object/table instead of using a standard one?",
+          sampleAnswer: "I always prefer standard objects because they receive automatic updates and integrate easily with native reporting. I only recommend custom objects when the business requirement is so unique that trying to force it into a standard object would require excessive workarounds, or when the data fundamentally doesn't fit standard relational models.",
+          keyElements: ["Stating a strong preference for standard/out-of-the-box features first", "Highlighting maintainability and upgrade benefits of standard features", "Defining a clear threshold for when custom is necessary"]
+        },
+        {
+          type: "Technical", question: "What are the key steps in a successful data migration?",
+          sampleAnswer: "A successful migration involves five steps: extraction from the legacy system, cleansing/deduplicating the data, mapping the fields to the new system's schema, performing a test load in a sandbox to validate, and finally the production load followed by data integrity checks.",
+          keyElements: ["Mentioning data cleansing/prep before loading", "Highlighting the field mapping process", "Emphasizing the importance of a test load in a sandbox environment"]
+        },
+        {
+          type: "Behavioral", question: "Describe a time you dealt with strong user resistance to a new system.",
+          sampleAnswer: "During a Salesforce rollout, the sales team hated the new UI because it required more clicks to log a call. Instead of forcing it, I sat with them, observed their workflow, and configured a custom quick-action button that reduced the process to one click. By listening and making a small tweak, I won their buy-in for the rest of the system.",
+          keyElements: ["Empathizing with the user's frustration rather than dismissing it", "Observing the actual workflow", "Providing a quick technical win to build trust"]
+        },
+        {
+          type: "Behavioral", question: "How do you translate a complex business rule into system configuration?",
+          sampleAnswer: "First, I ask the stakeholder to map the rule out visually or write it as 'If/Then' statements. Once I understand the logic, I review the platform's capabilities to see if a standard workflow or validation rule can handle it. I then build a prototype in the sandbox and have the stakeholder test it to ensure it behaves exactly as they intended before pushing to production.",
+          keyElements: ["Breaking the rule down into logical steps (If/Then)", "Checking standard capabilities before custom coding", "Validating with a prototype in a safe sandbox environment"]
+        }
       ]
     },
 
     cloud: {
       salaryFigure: "$120,000 – $150,000/yr",
-      salaryNote: "Estimates range widely by source: ZipRecruiter reports about $127,000, Salary.com around $120,000, and Glassdoor runs meaningfully higher at $152,000–$157,000. The gap mostly reflects how narrowly or broadly the title is scoped, and whether senior/specialized roles are folded in.",
+      salaryNote: "Estimates range widely by source. Glassdoor runs near $152,000–$157,000. Related titles — DevOps Engineer, Site Reliability Engineer — trend even higher due to production accountability.",
       ranges: [
         {label:"Entry-level", value:"$110,000 – $130,000"},
         {label:"Mid-career", value:"$120,000 – $152,000"},
         {label:"Senior", value:"$140,000 – $191,000+"},
         {label:"Top 10% (90th pctile)", value:"$163,000 – $238,000"}
       ],
-      whatItIs: "A Cloud/Infrastructure Engineer designs, builds, and maintains the underlying computing infrastructure — servers, networks, storage, and increasingly cloud-based resources on platforms like AWS, Azure, or Google Cloud — that everything else runs on. The field has shifted heavily from physical data centers toward virtual, code-defined infrastructure, with a strong overlap into automation and reliability engineering. Related titles — DevOps Engineer, Site Reliability Engineer, Cloud Security Engineer — trend even higher, since pay differences across these titles usually reflect scope and production accountability more than the title itself.",
+      whatItIs: "A Cloud/Infrastructure Engineer designs, builds, and maintains the underlying computing infrastructure (AWS, Azure, GCP) that everything else runs on. The field has shifted heavily toward code-defined infrastructure.",
       tasks: [
-        "Designing and provisioning cloud infrastructure (compute, storage, networking) on AWS/Azure/GCP",
-        "Writing Infrastructure as Code (IaC) with tools like Terraform or CloudFormation",
-        "Automating deployment pipelines (CI/CD) for application releases",
+        "Designing and provisioning cloud infrastructure",
+        "Writing Infrastructure as Code (IaC) with tools like Terraform",
+        "Automating deployment pipelines (CI/CD)",
         "Monitoring system performance, uptime, and resource usage",
-        "Managing security configurations — identity/access management, network security, encryption",
-        "Troubleshooting outages and performance bottlenecks",
-        "Optimizing cloud costs and resource allocation",
-        "Managing containerized workloads (Docker, Kubernetes)",
-        "Planning and executing migrations between on-premises and cloud, or between cloud providers",
-        "Maintaining disaster recovery and backup plans"
+        "Managing containerized workloads (Docker, Kubernetes)"
       ],
       skills: [
-        "Deep knowledge of at least one major cloud platform — AWS is most in-demand, followed by Azure and GCP",
-        "Linux system administration, still foundational since most cloud infrastructure runs on it",
-        "Networking fundamentals: VPCs, subnets, load balancing, DNS, firewalls",
-        "Infrastructure as Code — Terraform is the most widely requested tool across providers",
-        "Scripting and automation (Python, Bash)",
-        "Containerization and orchestration — Docker and Kubernetes are close to standard requirements now",
-        "CI/CD pipeline tools (Jenkins, GitHub Actions, GitLab CI)",
-        "Monitoring and observability tools (Prometheus, Grafana, CloudWatch, Datadog)"
+        "Deep knowledge of at least one major cloud platform",
+        "Linux system administration and networking fundamentals",
+        "Infrastructure as Code (Terraform)",
+        "Containerization (Docker, Kubernetes) and CI/CD tools"
       ],
-      certs: "Certifications carry real, explicit weight here, more so than in many other IT fields. AWS Certified Solutions Architect (Associate, then Professional) is the most recognized credential; Azure Administrator Associate or Solutions Architect Expert cover Microsoft's cloud; Google's Professional Cloud Architect covers GCP. The Certified Kubernetes Administrator (CKA) and HashiCorp Certified Terraform Associate are strong platform-agnostic additions.",
-      path: [
-        "A CS or IT degree is common but far from required — this is one of the more certification-driven fields in tech",
-        "Build a solid Linux and networking foundation before specializing in cloud",
-        "Get hands-on using a free tier (AWS, Azure, GCP all offer one) — deploy a real app, set up CI/CD, provision infrastructure with Terraform",
-        "Earn a foundational cloud certification early, like AWS Certified Cloud Practitioner or Solutions Architect Associate",
-        "Decide on a specialization as you grow: pure infrastructure, DevOps/automation, site reliability, or cloud security",
-        "Track the infrastructure-as-code trend — treating infrastructure as version-controlled, testable software is one of the clearest differentiators in interviews and pay negotiations"
+      entryLevel: "Entry-level cloud engineers must have strong Linux command line skills, a solid understanding of networking (IP, DNS, Subnets), basic scripting (Python/Bash), and familiarity with core cloud primitives (compute, storage).",
+      strongCandidate: "A top-tier cloud engineer treats infrastructure as version-controlled software. They focus relentlessly on automation, architect for high availability and disaster recovery, and keep a sharp eye on optimizing cloud costs.",
+      source: "State of Cloud Strategy Report 2026",
+      moreInfoLink: "https://www.wgu.edu/career-guide/information-technology/cloud-engineer-career.html",
+      interviewPrep: [
+        {
+          type: "Technical", question: "Explain the difference between IaaS, PaaS, and SaaS.",
+          sampleAnswer: "Infrastructure as a Service (IaaS) gives you raw computing primitives like VMs and networking (e.g., AWS EC2) where you manage the OS and runtime. Platform as a Service (PaaS) abstracts the OS away, letting you just deploy code (e.g., Heroku). Software as a Service (SaaS) provides a complete, managed application (e.g., Gmail).",
+          keyElements: ["Correctly defining IaaS (managing OS/infrastructure)", "Correctly defining PaaS (managing only application code)", "Correctly defining SaaS (fully managed end-user software)"]
+        },
+        {
+          type: "Technical", question: "How does a load balancer work, and why is it important?",
+          sampleAnswer: "A load balancer acts as a traffic cop, distributing incoming network traffic across multiple servers. This ensures no single server bears too much demand, improving application responsiveness, and provides high availability—if one server fails, the load balancer redirects traffic to the remaining healthy servers.",
+          keyElements: ["Explaining the distribution of traffic across multiple nodes", "Mentioning performance/responsiveness benefits", "Mentioning high availability and fault tolerance"]
+        },
+        {
+          type: "Behavioral", question: "Tell me about a time you handled a production outage.",
+          sampleAnswer: "During a major deployment, a misconfigured firewall rule caused a database timeout. My monitoring tools alerted me immediately. I joined the incident bridge, communicated the issue to the team, and rolled back the Terraform deployment to the previous stable state. Once services were restored, I wrote a post-mortem detailing the root cause and added a pre-deployment check to our CI/CD pipeline to prevent it from happening again.",
+          keyElements: ["Staying calm and communicating clearly", "Focusing on rapid restoration (rolling back) over immediate troubleshooting", "Implementing preventative measures (post-mortem/CI checks)"]
+        },
+        {
+          type: "Behavioral", question: "How do you balance the need for rapid feature deployment with the need for infrastructure stability?",
+          sampleAnswer: "I believe in enabling developers rather than blocking them, which means building 'paved roads.' I work with them to set up robust CI/CD pipelines with automated testing and infrastructure-as-code templates. This allows them to deploy rapidly and safely, because the guardrails are built directly into the automation rather than relying on manual, slow approvals.",
+          keyElements: ["Viewing infrastructure as an enabler, not a blocker", "Relying on automation and CI/CD for safety", "Using Infrastructure as Code (IaC) to standardize deployments"]
+        }
       ]
     }
   };
@@ -1032,7 +1139,6 @@
 
   const answers = new Array(QUESTIONS.length).fill(null);
   let current = 0;
-  let cameFromResults = false;
 
   const introPanel = document.getElementById('introPanel');
   const quizPanel = document.getElementById('quizPanel');
@@ -1040,9 +1146,11 @@
   const quizFlow = document.getElementById('quizFlow');
   const jobFlow = document.getElementById('jobFlow');
   const jobPanel = document.getElementById('jobPanel');
+  const interviewFlow = document.getElementById('interviewFlow');
+  const interviewPanel = document.getElementById('interviewPanel');
+  
   const startBtn = document.getElementById('startBtn');
   const qIndex = document.getElementById('qIndex');
-  const qTag = document.getElementById('qTag');
   const qText = document.getElementById('qText');
   const scaleEl = document.getElementById('scale');
   const traceFill = document.getElementById('traceFill');
@@ -1063,7 +1171,21 @@
 
   jobSelect.addEventListener('change', () => {
     const key = jobSelect.value;
-    if (key){ showJobPage(key); }
+    if (key){ 
+      showJobPage(key); 
+    } else {
+      // Go back to the start page to retake the quiz
+      answers.fill(null);
+      current = 0;
+      jobFlow.classList.add('hidden');
+      interviewFlow.classList.add('hidden');
+      quizPanel.classList.add('hidden');
+      resultPanel.classList.add('hidden');
+      quizFlow.classList.remove('hidden');
+      introPanel.classList.remove('hidden');
+      statusLine.textContent = "DRAFT / IN PROGRESS";
+      window.scrollTo({top:0, behavior: 'instant' in window ? 'instant' : 'auto'});
+    }
   });
 
   logoBtn.addEventListener('click', () => {
@@ -1081,7 +1203,6 @@
   function renderQuestion(){
     const q = QUESTIONS[current];
     qIndex.textContent = `Q${current+1} / ${QUESTIONS.length}`;
-    qTag.textContent = q.tag;
     qText.textContent = q.text;
     traceFill.style.width = `${(current / QUESTIONS.length) * 100}%`;
 
@@ -1190,12 +1311,15 @@
     });
   }
 
-  // ---------- Job detail page rendering ----------
+  // ---------- Navigation logic ----------
 
   function showQuizFlow(){
     jobFlow.classList.add('hidden');
+    interviewFlow.classList.add('hidden');
     quizFlow.classList.remove('hidden');
   }
+
+  // ---------- Job detail page rendering ----------
 
   function showJobPage(key){
     const role = ROLES[key];
@@ -1203,6 +1327,7 @@
     if (!role || !d) return;
 
     quizFlow.classList.add('hidden');
+    interviewFlow.classList.add('hidden');
     jobFlow.classList.remove('hidden');
     window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
 
@@ -1215,7 +1340,6 @@
 
     const tasksHtml = d.tasks.map(t => `<li>${t}</li>`).join('');
     const skillsHtml = d.skills.map(s => `<li>${s}</li>`).join('');
-    const pathHtml = d.path.map(p => `<li>${p}</li>`).join('');
 
     jobPanel.innerHTML = `
       <div class="job-eyebrow">ROLE ${(ROLE_ORDER.indexOf(key)+1).toString().padStart(2,'0')} / ${ROLE_ORDER.length} — U.S. DATA, 2026</div>
@@ -1230,25 +1354,106 @@
       <div class="section-label">WHAT THE JOB IS</div>
       <p class="body-text">${d.whatItIs}</p>
 
-      <div class="section-label">MAIN TASKS</div>
+      <div class="section-label">DAY-TO-DAY TASKS</div>
       <ul class="task-list">${tasksHtml}</ul>
 
-      <div class="section-label">HOW TO PREPARE</div>
-      <div class="subhead">Core skills to build</div>
+      <div class="section-label">TECHNICAL SKILLS & TOOLS</div>
       <ul class="task-list">${skillsHtml}</ul>
-      <div class="subhead">Certifications worth pursuing</div>
-      <p class="body-text">${d.certs}</p>
-      <div class="subhead">A realistic path in</div>
-      <ul class="task-list">${pathHtml}</ul>
 
-      <div class="nav-row" style="justify-content:flex-start;">
-        <button class="ghost" id="jobBackBtn">← Back</button>
+      <div class="section-label">ENTRY-LEVEL & INTERNSHIP EXPECTATIONS</div>
+      <p class="body-text">${d.entryLevel}</p>
+
+      <div class="section-label">WHAT MAKES A STRONG CANDIDATE</div>
+      <p class="body-text">${d.strongCandidate}</p>
+
+      <div class="section-label">ADDITIONAL RESOURCES</div>
+      <p class="body-text" style="font-family:var(--font-mono); font-size:12.5px;">Source: ${d.source}</p>
+      <p class="body-text">
+        <a href="${d.moreInfoLink}" target="_blank" rel="noopener noreferrer" class="external-link">Learn more about this career path →</a>
+      </p>
+
+      <div class="nav-row" style="margin-top:48px;">
+        <button class="ghost" id="jobBackBtn">← Back to Quiz</button>
+        <button class="primary" id="interviewPrepBtn">Practice for Interviews →</button>
       </div>
     `;
 
     document.getElementById('jobBackBtn').addEventListener('click', () => {
       jobSelect.value = "";
       showQuizFlow();
+    });
+
+    document.getElementById('interviewPrepBtn').addEventListener('click', () => {
+      showInterviewPage(key);
+    });
+  }
+
+  // ---------- Interview Prep rendering ----------
+
+  function showInterviewPage(key) {
+    const role = ROLES[key];
+    const d = DETAILS[key];
+
+    quizFlow.classList.add('hidden');
+    jobFlow.classList.add('hidden');
+    interviewFlow.classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+
+    let html = `
+      <div class="job-eyebrow">INTERVIEW PREP</div>
+      <h2 class="job-title" style="max-width:none;">${role.name}</h2>
+      <p class="body-text" style="margin-bottom:32px;">Read the question, type your response into the box, and submit to compare your answer against an ideal response.</p>
+    `;
+
+    d.interviewPrep.forEach((q, idx) => {
+      html += `
+        <div class="interview-card">
+          <div class="result-eyebrow">${q.type.toUpperCase()} QUESTION ${idx + 1}</div>
+          <p style="font-family:var(--font-display); font-weight:600; font-size:18px; margin-bottom:16px;">${q.question}</p>
+          
+          <textarea class="prep-area" id="ans-${idx}" placeholder="Type your answer here..." rows="4"></textarea>
+          <button class="primary submit-ans" data-idx="${idx}">Submit Answer</button>
+          
+          <div id="feedback-${idx}" class="feedback-block hidden">
+            <div class="subhead">Sample Answer</div>
+            <p class="body-text" style="margin-bottom: 20px;"><em>"${q.sampleAnswer}"</em></p>
+            
+            <div class="subhead">What sets a great answer apart:</div>
+            <ul class="task-list">
+              ${q.keyElements.map(e => `<li>${e}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="nav-row" style="justify-content:flex-start;">
+        <button class="ghost" id="backToJobBtn">← Back to Role Dossier</button>
+      </div>
+    `;
+
+    interviewPanel.innerHTML = html;
+
+    // Attach logic to submit buttons
+    document.querySelectorAll('.submit-ans').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = e.target.dataset.idx;
+        const textArea = document.getElementById(`ans-${idx}`);
+        
+        if (textArea.value.trim() === '') {
+          alert("Please type an answer before submitting.");
+          return;
+        }
+
+        document.getElementById(`feedback-${idx}`).classList.remove('hidden');
+        e.target.classList.add('hidden');
+        textArea.disabled = true;
+      });
+    });
+
+    document.getElementById('backToJobBtn').addEventListener('click', () => {
+      showJobPage(key);
     });
   }
 
@@ -1257,4 +1462,3 @@
 
 </body>
 </html>
-
