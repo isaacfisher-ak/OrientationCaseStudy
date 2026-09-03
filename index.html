@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint — Find your IT path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:   #0f2942;
+    --blue-base:   #123a5e;
+    --blue-panel:  #163f66;
+    --line-soft:   rgba(210,230,245,0.14);
+    --line-strong: rgba(210,230,245,0.28);
+    --paper:       #eef3f7;
+    --paper-dim:   rgba(238,243,247,0.62);
+    --amber:       #f2a83c;
+    --amber-dim:   rgba(242,168,60,0.28);
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    min-height:100vh;
+    background:
+      repeating-linear-gradient(0deg, var(--line-soft) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(90deg, var(--line-soft) 0 1px, transparent 1px 44px),
+      radial-gradient(ellipse at 20% -10%, var(--blue-panel), var(--blue-deep) 60%);
+    background-color: var(--blue-deep);
+    color: var(--paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a{ color: inherit; }
+
+  /* ---------- Top nav bar ---------- */
+  .navbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    padding: 14px clamp(18px, 4vw, 40px);
+    background: rgba(15,41,66,0.86);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .nav-logo{
+    display:flex;
+    align-items:baseline;
+    gap: 8px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    padding: 4px 0;
+  }
+  .nav-logo .dot{ color: var(--amber); }
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+
+  .job-select-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .job-select-wrap::after{
+    content:"▾";
+    position:absolute;
+    right: 14px;
+    color: var(--amber);
+    font-size: 11px;
+    pointer-events:none;
+  }
+  select.job-select{
+    appearance:none;
+    -webkit-appearance:none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-strong);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 9px 32px 9px 14px;
+    border-radius: 2px;
+    cursor:pointer;
+    max-width: 46vw;
+  }
+  select.job-select:hover{ border-color: var(--amber); }
+  select.job-select option{ background: var(--blue-deep); color: var(--paper); }
+
+  .stage{
+    min-height: calc(100vh - 60px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 18px 60px;
+  }
+
+  /* ---------- Corner registration marks, blueprint chrome ---------- */
+  .corner-marks span{
+    position:fixed;
+    width:26px; height:26px;
+    border: 1px solid var(--line-strong);
+    opacity:0.7;
+    pointer-events:none;
+  }
+  .corner-marks .bl{ bottom:18px; left:18px; border-right:none; border-top:none; }
+  .corner-marks .br{ bottom:18px; right:18px; border-left:none; border-top:none; }
+
+  .masthead{
+    width:100%;
+    max-width: 680px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom: 26px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: var(--paper-dim);
+  }
+  .masthead b{ color:var(--paper); font-weight:500; }
+
+  h1.title{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height:1.08;
+    margin: 0 0 8px;
+    max-width: 680px;
+  }
+
+  p.sub{
+    font-size:15px;
+    color: var(--paper-dim);
+    max-width: 520px;
+    line-height:1.55;
+    margin: 0 0 34px;
+  }
+
+  /* ---------- Card ---------- */
+  .panel{
+    width:100%;
+    max-width: 640px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    padding: 36px clamp(20px,5vw,48px) 40px;
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:-1px; left: 22px; right:22px; height:1px;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 6px, transparent 6px 12px);
+    opacity:0.55;
+  }
+  .panel.wide{ max-width: 780px; }
+
+  /* ---------- Progress trace ---------- */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 30px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--paper-dim);
+  }
+  .trace{
+    position:relative;
+    flex:1;
+    height:2px;
+    background: var(--line-strong);
+    margin: 0 16px;
+  }
+  .trace-fill{
+    position:absolute; left:0; top:0; height:100%;
+    background: var(--amber);
+    transition: width 0.4s ease;
+  }
+
+  .q-index{ white-space:nowrap; }
+
+  /* ---------- Question ---------- */
+  .q-text{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: clamp(20px, 3.4vw, 25px);
+    line-height:1.35;
+    margin: 0 0 30px;
+    min-height: 70px;
+  }
+
+  .scale{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    padding: 6px 4px 0;
+  }
+  .scale::before{
+    content:"";
+    position:absolute;
+    left:22px; right:22px; top:24px;
+    height:1px;
+    background: var(--line-strong);
+  }
+  .node-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    padding: 4px 2px;
+    font-family: var(--font-body);
+    color: var(--paper-dim);
+    position:relative;
+    z-index:1;
+    flex:1;
+  }
+  .node-wrap:hover .node{ border-color: var(--amber); }
+  .node{
+    width: 20px; height:20px;
+    border-radius:50%;
+    border: 1.5px solid var(--line-strong);
+    background: var(--blue-deep);
+    transition: all 0.15s ease;
+  }
+  .node-wrap[aria-pressed="true"] .node{
+    background: var(--amber);
+    border-color: var(--amber);
+    box-shadow: 0 0 0 5px var(--amber-dim);
+  }
+  .node-label{
+    font-size: 11.5px;
+    text-align:center;
+    line-height:1.3;
+    max-width: 78px;
+  }
+  .node-wrap[aria-pressed="true"] .node-label{ color: var(--paper); }
+
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 40px;
+    gap: 12px;
+    flex-wrap:wrap;
+  }
+
+  button.ghost{
+    background:none;
+    border: 1px solid var(--line-strong);
+    color: var(--paper-dim);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 10px 16px;
+    border-radius: 2px;
+    cursor:pointer;
+    transition: all 0.15s ease;
+  }
+  button.ghost:hover:not(:disabled){ border-color: var(--paper); color: var(--paper); }
+  button.ghost:disabled{ opacity:0.3; cursor:not-allowed; }
+
+  button.primary{
+    background: var(--amber);
+    border: 1px solid var(--amber);
+    color: #1a1200;
+    font-family: var(--font-mono);
+    font-weight:500;
+    font-size: 12.5px;
+    padding: 10px 20px;
+    border-radius: 2px;
+    cursor:pointer;
+    transition: filter 0.15s ease, transform 0.1s ease;
+  }
+  button.primary:hover:not(:disabled){ filter: brightness(1.08); }
+  button.primary:disabled{ opacity:0.35; cursor:not-allowed; }
+  button.primary:active:not(:disabled){ transform: translateY(1px); }
+
+  /* ---------- Intro ---------- */
+  .intro-list{
+    list-style:none;
+    margin: 0 0 30px;
+    padding:0;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 22px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--paper-dim);
+  }
+  .intro-list li{ display:flex; gap:8px; }
+  .intro-list li::before{ content:"—"; color: var(--amber); }
+
+  /* ---------- Results ---------- */
+  .result-eyebrow{
+    font-family: var(--font-mono);
+    font-size:12px;
+    color: var(--amber);
+    margin-bottom:10px;
+  }
+  .result-title{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: clamp(26px, 5vw, 36px);
+    line-height:1.15;
+    margin: 0 0 16px;
+  }
+  .result-desc{
+    font-size:15px;
+    line-height:1.65;
+    color: var(--paper-dim);
+    margin: 0 0 30px;
+    max-width: 54ch;
+  }
+
+  .bars{
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .bar-row{
+    display:grid;
+    grid-template-columns: 150px 1fr 34px;
+    align-items:center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .bar-row .label{ color: var(--paper-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .bar-row .label:hover{ color: var(--paper); text-decoration: underline; text-underline-offset:3px; }
+  .bar-row.top .label{ color: var(--paper); }
+  .bar-track{
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--line-soft);
+    position:relative;
+    border-radius:1px;
+  }
+  .bar-fill{
+    position:absolute; left:0; top:0; bottom:0;
+    background: var(--line-strong);
+    width:0%;
+    transition: width 0.7s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar-row.top .bar-fill{ background: var(--amber); }
+  .bar-pct{ color: var(--paper-dim); text-align:right; }
+
+  .result-cta{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    margin-bottom: 6px;
+  }
+
+  .hidden{ display:none !important; }
+
+  /* ---------- Job detail page ---------- */
+  .job-eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .job-title{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(26px, 4.6vw, 38px);
+    line-height: 1.12;
+    margin: 0 0 26px;
+    max-width: 20ch;
+  }
+
+  .salary-block{
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    padding: 22px clamp(16px,3vw,28px);
+    margin-bottom: 30px;
+    background: rgba(255,255,255,0.02);
+  }
+  .salary-figure{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 4vw, 32px);
+    color: var(--amber);
+    margin: 0 0 8px;
+  }
+  .salary-note{
+    font-size: 13.5px;
+    color: var(--paper-dim);
+    line-height: 1.6;
+    margin: 0 0 20px;
+    max-width: 62ch;
+  }
+  .salary-ranges{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 22px;
+  }
+  .range-row{
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .range-row .r-label{ color: var(--paper-dim); }
+  .range-row .r-value{ color: var(--paper); font-size: 13.5px; }
+
+  .section-label{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber);
+    margin: 34px 0 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .section-label:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
+
+  p.body-text{
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--paper-dim);
+    margin: 0 0 8px;
+    max-width: 64ch;
+  }
+
+  ul.task-list{
+    list-style:none;
+    margin: 4px 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+  }
+  ul.task-list li{
+    font-size: 14px;
+    line-height:1.55;
+    color: var(--paper-dim);
+    padding-left: 18px;
+    position:relative;
+  }
+  ul.task-list li::before{
+    content:"";
+    position:absolute;
+    left:0; top:7px;
+    width:6px; height:1px;
+    background: var(--amber);
+  }
+
+  .subhead{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: 15px;
+    color: var(--paper);
+    margin: 22px 0 8px;
+  }
+  .subhead:first-of-type{ margin-top: 4px; }
+
+  @media (max-width: 480px){
+    .intro-list{ grid-template-columns: 1fr; }
+    .node-label{ display:none; }
+    .scale::before{ left:12px; right:12px; }
+    .salary-ranges{ grid-template-columns: 1fr; }
+    .nav-right{ width:100%; justify-content:flex-end; }
+    select.job-select{ max-width: 60vw; }
+  }
+</style>
+</head>
+<body>
+
+<div class="corner-marks">
+  <span class="bl"></span><span class="br"></span>
+</div>
+
+<nav class="navbar">
+  <button class="nav-logo" id="logoBtn"><span class="dot">■</span> Blueprint</button>
+  <div class="nav-right">
+    <div class="job-select-wrap">
+      <select class="job-select" id="jobSelect" aria-label="Jump to a job's page">
+        <option value="">Explore a role →</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<div class="stage">
+
+  <div id="quizFlow">
+    <div class="masthead">
+      <span>FIG. 01 — <b>CAREER SCHEMATIC</b></span>
+      <span id="statusLine">DRAFT / IN PROGRESS</span>
+    </div>
+
+    <h1 class="title">Find the IT role built for you.</h1>
+    <p class="sub">Twelve short statements about how you like to work. Answer honestly — there's no scoring for "right," only for "you." Then get matched to one of eight IT career paths.</p>
+
+    <!-- INTRO PANEL -->
+    <div class="panel" id="introPanel">
+      <div class="result-eyebrow">BEFORE YOU START</div>
+      <p style="font-size:15px; line-height:1.6; color:var(--paper-dim); margin:0 0 24px;">
+        For each statement, choose how much you agree — from strongly disagree to strongly agree. Takes about two minutes. Prefer to browse instead? Use the role menu in the top-right corner any time.
+      </p>
+      <ul class="intro-list">
+        <li>Software / Application Developer</li>
+        <li>Business / Systems Analyst</li>
+        <li>Data Analyst or Data Scientist</li>
+        <li>Cybersecurity Analyst</li>
+        <li>IT Project Manager</li>
+        <li>UX Designer / Product Manager</li>
+        <li>ERP / Systems Consultant</li>
+        <li>Cloud / Infrastructure Engineer</li>
+      </ul>
+      <div class="nav-row" style="justify-content:flex-end;">
+        <button class="primary" id="startBtn">Begin the quiz</button>
+      </div>
+    </div>
+
+    <!-- QUIZ PANEL -->
+    <div class="panel hidden" id="quizPanel">
+      <div class="progress-row">
+        <span class="q-index" id="qIndex">Q1 / 12</span>
+        <div class="trace"><div class="trace-fill" id="traceFill"></div></div>
+        <span id="qTag">DEV</span>
+      </div>
+
+      <div class="q-text" id="qText"></div>
+
+      <div class="scale" id="scale" role="radiogroup" aria-label="Agreement scale"></div>
+
+      <div class="nav-row">
+        <button class="ghost" id="backBtn">← Back</button>
+        <button class="primary" id="nextBtn" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="panel hidden" id="resultPanel">
+      <div class="result-eyebrow" id="resultEyebrow">YOUR BEST MATCH</div>
+      <h2 class="result-title" id="resultTitle"></h2>
+      <p class="result-desc" id="resultDesc"></p>
+
+      <div class="bars" id="bars"></div>
+
+      <p class="result-cta">Click any role above to see full salary data and how to break in.</p>
+
+      <div class="nav-row" style="justify-content:flex-start;">
+        <button class="ghost" id="retakeBtn">↺ Retake the quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOB DETAIL PAGE -->
+  <div class="stage hidden" id="jobFlow" style="padding:0; min-height:auto;">
+    <div class="masthead">
+      <span>FIG. 02 — <b>ROLE DOSSIER</b></span>
+      <span id="jobStatusLine">REFERENCE / U.S. DATA</span>
+    </div>
+    <div class="panel wide" id="jobPanel"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  const SCALE_LABELS = [
+    "Strongly disagree",
+    "Disagree",
+    "Neutral",
+    "Agree",
+    "Strongly agree"
+  ];
+
+  // Each question has a primary role (full weight) and optionally a
+  // secondary role (half weight). Values run 1–5 on the Likert scale.
+  const QUESTIONS = [
+    {
+      tag: "DEV",
+      text: "I enjoy writing code to build applications, tools, or automate tasks.",
+      primary: "dev"
+    },
+    {
+      tag: "BA",
+      text: "I like translating a business problem into clear requirements someone else can build.",
+      primary: "ba"
+    },
+    {
+      tag: "DATA",
+      text: "I enjoy digging through data to find patterns, trends, or build predictive models.",
+      primary: "data"
+    },
+    {
+      tag: "SEC",
+      text: "I'm drawn to finding security weaknesses and figuring out how to defend against them.",
+      primary: "sec"
+    },
+    {
+      tag: "PM",
+      text: "I like planning timelines, tracking tasks, and keeping a team moving toward a deadline.",
+      primary: "pm"
+    },
+    {
+      tag: "UX",
+      text: "I enjoy researching how people use a product and designing something more intuitive.",
+      primary: "ux"
+    },
+    {
+      tag: "ERP",
+      text: "I like configuring large business platforms (like SAP or Salesforce) to match how a company actually works.",
+      primary: "erp"
+    },
+    {
+      tag: "CLOUD",
+      text: "I enjoy managing servers, networks, or cloud infrastructure so everything stays up and running.",
+      primary: "cloud"
+    },
+    {
+      tag: "PM",
+      text: "I'd rather coordinate people and communicate with stakeholders than write technical code myself.",
+      primary: "pm",
+      secondary: "ba"
+    },
+    {
+      tag: "DEV",
+      text: "I like solving logic puzzles and methodically tracking down the cause of a bug.",
+      primary: "dev",
+      secondary: "sec"
+    },
+    {
+      tag: "UX",
+      text: "I care a lot about how something looks and feels, and I notice bad design immediately.",
+      primary: "ux",
+      secondary: "data"
+    },
+    {
+      tag: "CLOUD",
+      text: "I'm comfortable with ambiguous, constantly changing systems and enjoy learning new tools as they appear.",
+      primary: "cloud",
+      secondary: "erp"
+    }
+  ];
+
+  const ROLES = {
+    dev: {
+      name: "Software / Application Developer",
+      short: "Software Developer",
+      desc: "You like building things — turning an idea into working code. You'd likely thrive writing and shipping applications, solving logic puzzles as part of the job, and seeing your work run in production."
+    },
+    ba: {
+      name: "Business / Systems Analyst",
+      short: "Business Analyst",
+      desc: "You're the translator between business needs and technical solutions. You'd likely enjoy gathering requirements, mapping processes, and making sure what gets built actually solves the right problem."
+    },
+    data: {
+      name: "Data Analyst / Data Scientist",
+      short: "Data Analyst",
+      desc: "You think in patterns and evidence. You'd likely enjoy working with datasets, building models, and turning raw numbers into decisions other people can act on."
+    },
+    sec: {
+      name: "Cybersecurity Analyst",
+      short: "Cybersecurity",
+      desc: "You think like both an attacker and a defender. You'd likely enjoy hunting for vulnerabilities, monitoring for threats, and building systems that hold up under pressure."
+    },
+    pm: {
+      name: "IT Project Manager",
+      short: "IT Project Mgr",
+      desc: "You keep the moving parts moving. You'd likely enjoy planning timelines, coordinating across teams, and being the person who makes sure a project actually ships."
+    },
+    ux: {
+      name: "UX Designer / Product Manager",
+      short: "UX / Product",
+      desc: "You care about the human on the other side of the screen. You'd likely enjoy researching user needs, designing intuitive experiences, and shaping what a product should become."
+    },
+    erp: {
+      name: "ERP / Systems Consultant (e.g., SAP, Salesforce)",
+      short: "ERP Consultant",
+      desc: "You like configuring big systems to fit how a real business actually operates. You'd likely enjoy implementation work — customizing platforms like SAP or Salesforce around a company's processes."
+    },
+    cloud: {
+      name: "Cloud / Infrastructure Engineer",
+      short: "Cloud Engineer",
+      desc: "You like the machinery underneath everything else. You'd likely enjoy managing servers, networks, and cloud environments so the rest of the organization can build on solid ground."
+    }
+  };
+
+  // Detailed dossier content per role, sourced from public salary
+  // aggregators (ZipRecruiter, Glassdoor, Salary.com) as of 2026.
+  const DETAILS = {
+
+    dev: {
+      salaryFigure: "$110,000 – $150,000/yr",
+      salaryNote: "Reported averages vary a lot by title: ZipRecruiter puts general \"Software Developer\" at roughly $112,000, while Glassdoor's broader \"Software Engineer\" figure runs closer to $148,000. Specialized backend or platform roles trend toward the higher end.",
+      ranges: [
+        {label:"Entry-level", value:"$65,000 – $92,000"},
+        {label:"Mid-career", value:"$110,000 – $150,000"},
+        {label:"Senior", value:"$150,000 – $205,000+"},
+        {label:"Top 10% (90th pctile)", value:"$197,000 – $240,000+"}
+      ],
+      whatItIs: "A Software or Application Developer designs, writes, tests, and maintains the code that powers applications — anything from a mobile app to the backend systems behind a website. The role blends problem-solving with craftsmanship: you're not just making something work, you're making it maintainable, efficient, and easy for the next developer to pick up.",
+      tasks: [
+        "Writing, testing, and debugging code across the application stack",
+        "Translating feature requirements or designs into working software",
+        "Reviewing teammates' code and incorporating feedback on your own",
+        "Working within an Agile/Scrum process — sprints, standups, retros",
+        "Designing and integrating APIs and databases",
+        "Writing automated tests and fixing bugs found in production",
+        "Documenting how systems work for future maintainers",
+        "Collaborating with designers, product managers, and QA"
+      ],
+      skills: [
+        "Solid grounding in at least one language (JavaScript, Python, Java, C#, etc.)",
+        "Data structures and algorithms fundamentals",
+        "Git and collaborative version control workflows",
+        "A framework relevant to your track (React/Angular for front-end, Spring/.NET/Django for back-end)",
+        "Working SQL and database design knowledge",
+        "Familiarity with testing practices and CI/CD pipelines",
+        "Basic cloud/deployment literacy (most teams ship to AWS, Azure, or GCP)"
+      ],
+      certs: "This field weighs a portfolio and interview performance more heavily than certifications. That said, credentials like AWS Certified Developer, Microsoft's Azure Developer Associate, or language-specific certs (Oracle Java, Meta's front-end certificates) can help you stand out, especially without a CS degree.",
+      path: [
+        "Learn a language deeply rather than skimming several — build real, finished projects with it",
+        "A CS degree helps but isn't required; bootcamps and self-taught paths are common entry points",
+        "Build a public portfolio (GitHub, deployed side-projects) that shows you can ship something end-to-end",
+        "Practice technical interviewing — most hiring processes test data structures/algorithms directly",
+        "Start in a junior developer, QA, or support engineering role to build production experience",
+        "Specialize over time: front-end, back-end, mobile, full-stack, or platform/infrastructure-leaning work"
+      ]
+    },
+
+    ba: {
+      salaryFigure: "$100,000 – $125,000/yr",
+      salaryNote: "Glassdoor puts the average Business Systems Analyst around $118,000–$123,000; ZipRecruiter's figure runs lower, near $103,000, since it leans on posted job ranges rather than total compensation.",
+      ranges: [
+        {label:"Entry-level", value:"$70,000 – $95,000"},
+        {label:"Mid-career", value:"$100,000 – $130,000"},
+        {label:"Senior", value:"$130,000 – $180,000"},
+        {label:"Top 10% (90th pctile)", value:"$186,000 – $259,000"}
+      ],
+      whatItIs: "A Business or Systems Analyst sits between the business side of an organization and the technical teams building its systems. The job is translation: understanding what a department actually needs, documenting it clearly, and making sure whatever gets built (or bought) genuinely solves the underlying problem — not just what was asked for on the surface.",
+      tasks: [
+        "Interviewing stakeholders to elicit and clarify business requirements",
+        "Mapping current and future-state business processes (often in Visio or Lucidchart)",
+        "Writing user stories, functional specs, and acceptance criteria",
+        "Facilitating requirements workshops between business units and IT",
+        "Running light data analysis to support a business case or recommendation",
+        "Planning and executing user acceptance testing (UAT)",
+        "Producing documentation and training materials for new systems",
+        "Supporting the rollout of new software or process changes"
+      ],
+      skills: [
+        "Strong written and verbal communication — you're the translator in the room",
+        "Requirements documentation and process modeling (BPMN, flowcharts)",
+        "Working SQL and Excel for lightweight data analysis",
+        "Comfort with both Agile/Scrum and traditional Waterfall delivery",
+        "Stakeholder management and facilitation skills",
+        "A general understanding of the software development lifecycle (SDLC)"
+      ],
+      certs: "Certifications carry real weight here: the IIBA's CCBA and CBAP are the most recognized business-analysis credentials, PMI offers a PMI-PBA for the more technical end of the role, and a Certified ScrumMaster (CSM) is useful if you'll work in Agile teams.",
+      path: [
+        "A business, IT, or related degree is common, though not mandatory",
+        "Many BAs start in operations, support, or QA roles and move sideways into analysis",
+        "Build documentation samples (even from a personal or volunteer project) to show your process",
+        "Earn a CCBA or CSM once you have some hands-on requirements experience",
+        "Grow domain expertise in a specific industry (finance, healthcare, retail) — it compounds your value",
+        "Progress toward Senior BA, BA lead, or Product Owner as you take on bigger initiatives"
+      ]
+    },
+
+    data: {
+      salaryFigure: "$85,000 – $160,000/yr",
+      salaryNote: "This is really two salary bands in one title. Data Analyst averages sit around $83,000–$94,000 (ZipRecruiter, Glassdoor). Data Scientist — the more advanced, modeling-heavy version of the role — averages $123,000–$158,000, with total comp climbing well past $200,000 at senior/ML-focused levels.",
+      ranges: [
+        {label:"Entry (Analyst)", value:"$58,000 – $76,000"},
+        {label:"Mid (Analyst/Jr. Scientist)", value:"$85,000 – $120,000"},
+        {label:"Senior (Data Scientist)", value:"$140,000 – $180,000"},
+        {label:"Top 10% (90th pctile)", value:"$173,000 – $270,000+"}
+      ],
+      whatItIs: "A Data Analyst turns raw data into decisions — pulling numbers, cleaning them up, and building reports or dashboards that answer a specific business question. A Data Scientist takes this further, building statistical and machine-learning models to predict outcomes rather than just describe them. Most people enter through the analyst door and grow into data science as their statistics and programming depth increases.",
+      tasks: [
+        "Writing SQL queries to pull and join data from multiple sources",
+        "Cleaning and reshaping messy, incomplete, or inconsistent datasets",
+        "Building dashboards and reports (Tableau, Power BI, Looker)",
+        "Running statistical analysis to test a hypothesis or explain a trend",
+        "Building and validating predictive or machine-learning models (data scientist track)",
+        "Designing and interpreting A/B tests",
+        "Presenting findings to non-technical stakeholders in plain language",
+        "Partnering with engineering on data pipeline and infrastructure needs"
+      ],
+      skills: [
+        "SQL — genuinely non-negotiable for this role",
+        "Python or R for analysis, and for data science, machine-learning libraries (scikit-learn, PyTorch)",
+        "Statistics fundamentals: distributions, hypothesis testing, regression",
+        "A visualization tool (Tableau or Power BI are the most commonly requested)",
+        "Excel, still widely used for quick analysis and stakeholder-facing work",
+        "The ability to explain technical findings to a non-technical audience clearly"
+      ],
+      certs: "The Google Data Analytics Professional Certificate and Microsoft's Power BI certification are common, accessible entry points. For the data-science track, IBM's Data Science Professional Certificate and AWS Certified Machine Learning – Specialty carry more weight as you advance.",
+      path: [
+        "A background in math, statistics, economics, or CS helps, but isn't required with the right portfolio",
+        "Build projects that show the full pipeline: pulling data, cleaning it, analyzing it, and presenting a conclusion",
+        "Start as a data or business analyst to build SQL and stakeholder-communication muscle",
+        "Deepen statistics and add machine-learning coursework or a master's degree to move toward data science",
+        "Specialize as you grow: analytics engineering, applied science, or machine-learning engineering"
+      ]
+    },
+
+    sec: {
+      salaryFigure: "$100,000 – $135,000/yr",
+      salaryNote: "ZipRecruiter's broad average sits near $99,000; Glassdoor and industry aggregators that include senior/specialized titles report $128,000–$136,000. The single biggest swing factor is seniority — entry-level SOC work and senior incident response are priced very differently under the same job title.",
+      ranges: [
+        {label:"Entry-level (SOC Tier 1)", value:"$55,000 – $91,500"},
+        {label:"Mid-career", value:"$95,000 – $148,000"},
+        {label:"Senior", value:"$130,000 – $196,000"},
+        {label:"Top 10% (90th pctile)", value:"$137,000 – $297,000"}
+      ],
+      whatItIs: "A Cybersecurity Analyst protects an organization's systems and data from attack. Day to day, that means watching for suspicious activity, investigating and responding to incidents, and continuously hardening defenses — a mix of vigilant monitoring, technical detective work, and clear incident reporting.",
+      tasks: [
+        "Monitoring SIEM tools (Splunk, QRadar) for suspicious activity",
+        "Investigating and responding to security incidents and alerts",
+        "Running or reviewing vulnerability scans and remediation plans",
+        "Managing firewalls, endpoint protection, and identity/access controls",
+        "Conducting risk assessments against frameworks like NIST or ISO 27001",
+        "Writing incident reports and post-incident reviews",
+        "Staying current on emerging threats and attack techniques",
+        "Supporting security awareness training for other employees"
+      ],
+      skills: [
+        "Solid networking fundamentals (TCP/IP, firewalls, DNS)",
+        "Comfort administering both Windows and Linux systems",
+        "SIEM and log-analysis tool experience",
+        "Understanding of common attack patterns: phishing, malware, ransomware",
+        "Scripting (Python or Bash) to automate detection and response tasks",
+        "Familiarity with identity and access management concepts"
+      ],
+      certs: "CompTIA Security+ is the standard entry-level credential and is often listed as a hard requirement. CompTIA CySA+ and Certified Ethical Hacker (CEH) build on it, and GIAC certifications (GSEC, GCIH) or the CISSP become relevant once you're aiming for senior or leadership roles.",
+      path: [
+        "IT helpdesk, sysadmin, or network roles are the most common on-ramp into security",
+        "Earn Security+ early — it's often the gate to even being considered",
+        "Practice in a home lab or on platforms like TryHackMe or HackTheBox to build hands-on skill",
+        "Start as a SOC Tier 1 analyst monitoring alerts and escalating incidents",
+        "Move into Tier 2/3 incident response, or specialize in cloud security, threat intelligence, or GRC",
+        "Pursue CISSP once you have several years of experience, for senior or leadership tracks"
+      ]
+    },
+
+    pm: {
+      salaryFigure: "$100,000 – $140,000/yr",
+      salaryNote: "ZipRecruiter's active-postings average is around $114,000; Glassdoor's total-compensation figure runs higher, near $130,000–$139,000. PMI's own research found PMP-certified project managers earn roughly a third more than uncertified peers in the same role.",
+      ranges: [
+        {label:"Entry (Coordinator)", value:"$55,000 – $80,000"},
+        {label:"Mid-career (3–7 yrs)", value:"$100,000 – $130,000"},
+        {label:"Senior (10+ yrs / PMO)", value:"$145,000 – $176,000"},
+        {label:"Top 10% (90th pctile)", value:"$140,000 – $217,000+"}
+      ],
+      whatItIs: "An IT Project Manager plans, coordinates, and delivers technology projects on time and within budget. The job is less about writing code or configuring systems yourself and more about scope, schedule, risk, and communication — making sure the technical team, the business stakeholders, and the deadline all stay aligned.",
+      tasks: [
+        "Defining project scope, objectives, and success criteria with stakeholders",
+        "Building and maintaining project plans, timelines, and budgets",
+        "Running standups, status meetings, and steering committee updates",
+        "Tracking risks and issues, and escalating them before they become blockers",
+        "Managing vendor and contractor relationships",
+        "Facilitating Agile ceremonies (sprint planning, retros) on Agile-run teams",
+        "Reporting progress and outcomes to leadership",
+        "Closing out projects and capturing lessons learned"
+      ],
+      skills: [
+        "Project planning and scheduling (Gantt charts, critical path thinking)",
+        "Budget management and resource allocation",
+        "Risk identification and mitigation planning",
+        "Stakeholder communication — often the single most-used skill in the role",
+        "Fluency in both Waterfall and Agile/Scrum methodologies",
+        "Tooling: Jira, Asana, Microsoft Project, Confluence",
+        "Enough technical literacy to understand what the team is actually building"
+      ],
+      certs: "PMP (Project Management Professional) from PMI is the gold-standard credential in this field and comes with a documented pay premium. CAPM is a good entry-level alternative before you meet PMP's experience requirement, and Certified ScrumMaster (CSM) or PMI-ACP are valuable for Agile-heavy environments.",
+      path: [
+        "Many IT PMs start in a technical or coordination role — business analyst, developer, or QA",
+        "Take on informal project-coordination responsibilities to build a track record early",
+        "Earn a CAPM, then a PMP once you hit the required experience (roughly 3 years leading projects)",
+        "Build a portfolio of delivered projects you can speak to concretely in interviews",
+        "Advance toward Senior PM, Program Manager, or PMO Director as your project scope grows"
+      ]
+    },
+
+    ux: {
+      salaryFigure: "$95,000 – $140,000/yr",
+      salaryNote: "Glassdoor and ZipRecruiter both put the average UX Designer around $106,000–$108,000. Titles blur here — companies calling the same work \"Product Designer\" often post meaningfully higher bands, so it's worth checking both titles when you're job-hunting.",
+      ranges: [
+        {label:"Entry-level", value:"$65,000 – $91,000"},
+        {label:"Mid-career", value:"$95,000 – $130,000"},
+        {label:"Senior", value:"$140,000 – $186,000"},
+        {label:"Top 10% (90th pctile)", value:"$152,000 – $241,000+"}
+      ],
+      whatItIs: "A UX Designer focuses on how a product feels and functions from the user's perspective — researching real needs, prototyping solutions, and refining them based on testing. A Product Manager (a common adjacent path) takes a step back to decide what a product should become in the first place. Both roles are fundamentally about advocating for the person on the other side of the screen.",
+      tasks: [
+        "Conducting user research: interviews, surveys, usability testing",
+        "Building wireframes and interactive prototypes (usually in Figma)",
+        "Creating user journey maps and personas to guide design decisions",
+        "Defining product requirements and roadmaps (more PM-leaning work)",
+        "Running and participating in design critiques",
+        "Collaborating closely with engineers on implementation feasibility",
+        "Analyzing product usage data to see what's actually working",
+        "Presenting design rationale and trade-offs to stakeholders"
+      ],
+      skills: [
+        "Prototyping tools — Figma is close to an industry standard now",
+        "User research methods and how to synthesize findings into decisions",
+        "Information architecture and interaction design fundamentals",
+        "Basic data literacy — knowing what to measure and why",
+        "For PM-leaning roles: prioritization frameworks and roadmapping",
+        "Strong storytelling — designs live or die on how well you can explain the reasoning behind them"
+      ],
+      certs: "This field cares more about your portfolio than any certificate. That said, the Google UX Design Professional Certificate is a reasonable low-cost entry point, and a Certified Scrum Product Owner (CSPO) is useful if you're leaning toward the product-management side.",
+      path: [
+        "A portfolio of real case studies matters more here than a specific degree",
+        "Common entry paths include graphic design, psychology, or self-directed UX bootcamps",
+        "Start as a junior designer or associate PM working under someone more senior",
+        "Take ownership of increasingly ambiguous, larger problems as you grow",
+        "Progress toward Senior/Staff Designer, or shift into Product Manager if you enjoy the strategy side more than the craft"
+      ]
+    },
+
+    erp: {
+      salaryFigure: "$110,000 – $150,000/yr",
+      salaryNote: "SAP Consultant averages run $130,000–$151,000 depending on the source; Salesforce Consultant sits a bit lower at $119,000–$127,000. The title hides a lot of variation — pre-sales \"solution consultants\" who demo the platform are priced differently than functional consultants who actually configure it.",
+      ranges: [
+        {label:"Entry-level", value:"$60,000 – $85,000"},
+        {label:"Mid-career (functional)", value:"$100,000 – $135,000"},
+        {label:"Senior", value:"$120,000 – $185,000"},
+        {label:"Top 10% / Architect", value:"$180,000 – $250,000+"}
+      ],
+      whatItIs: "An ERP or Systems Consultant implements and customizes large business platforms — SAP, Salesforce, Oracle, Workday, and similar — so the software matches how a specific company actually runs its finance, HR, sales, or supply-chain operations. It's part business analysis, part technical configuration, delivered through structured implementation projects.",
+      tasks: [
+        "Gathering requirements from business departments (finance, HR, sales, supply chain)",
+        "Configuring modules, objects, and workflows within the platform",
+        "Mapping and migrating data from legacy systems",
+        "Writing functional and technical specification documents",
+        "Testing configurations through user acceptance testing (UAT)",
+        "Training end users and producing documentation",
+        "Troubleshooting issues after go-live",
+        "Coordinating with developers on custom code (ABAP, Apex) when standard configuration isn't enough"
+      ],
+      skills: [
+        "Deep knowledge of one platform's modules (e.g., SAP FI/CO, MM, SD, or Salesforce Sales/Service Cloud)",
+        "Business-process knowledge in the function you support",
+        "Requirements gathering and stakeholder facilitation",
+        "Configuration logic and light scripting ability",
+        "Data-migration experience",
+        "Project coordination — you're often part-consultant, part-project-manager"
+      ],
+      certs: "This is one of the most certification-driven fields in IT. SAP Certified Application Associate credentials (module-specific), Salesforce Administrator and Salesforce Certified Consultant badges, Oracle Cloud certifications, and Workday Pro credentials are all used directly as hiring filters — employers explicitly screen for them.",
+      path: [
+        "Many consultants enter from a functional business role (finance, HR, sales ops) rather than a pure-IT background",
+        "Get certified on one platform early — Salesforce Administrator is a widely accessible starting point",
+        "Join an implementation partner or consulting firm to get reps across multiple client projects fast",
+        "Specialize in a module or vertical industry to become the go-to expert",
+        "Progress toward Solution Architect or Engagement/Program Lead as you take on larger implementations"
+      ]
+    },
+
+    cloud: {
+      salaryFigure: "$120,000 – $150,000/yr",
+      salaryNote: "Estimates range widely by source: ZipRecruiter reports about $127,000, Salary.com around $120,000, and Glassdoor runs meaningfully higher at $152,000–$157,000. The gap mostly reflects how narrowly or broadly the title is scoped, and whether senior/specialized roles are folded in.",
+      ranges: [
+        {label:"Entry-level", value:"$110,000 – $130,000"},
+        {label:"Mid-career", value:"$120,000 – $152,000"},
+        {label:"Senior", value:"$140,000 – $191,000+"},
+        {label:"Top 10% (90th pctile)", value:"$163,000 – $238,000"}
+      ],
+      whatItIs: "A Cloud/Infrastructure Engineer designs, builds, and maintains the underlying computing infrastructure — servers, networks, storage, and increasingly cloud-based resources on platforms like AWS, Azure, or Google Cloud — that everything else runs on. The field has shifted heavily from physical data centers toward virtual, code-defined infrastructure, with a strong overlap into automation and reliability engineering. Related titles — DevOps Engineer, Site Reliability Engineer, Cloud Security Engineer — trend even higher, since pay differences across these titles usually reflect scope and production accountability more than the title itself.",
+      tasks: [
+        "Designing and provisioning cloud infrastructure (compute, storage, networking) on AWS/Azure/GCP",
+        "Writing Infrastructure as Code (IaC) with tools like Terraform or CloudFormation",
+        "Automating deployment pipelines (CI/CD) for application releases",
+        "Monitoring system performance, uptime, and resource usage",
+        "Managing security configurations — identity/access management, network security, encryption",
+        "Troubleshooting outages and performance bottlenecks",
+        "Optimizing cloud costs and resource allocation",
+        "Managing containerized workloads (Docker, Kubernetes)",
+        "Planning and executing migrations between on-premises and cloud, or between cloud providers",
+        "Maintaining disaster recovery and backup plans"
+      ],
+      skills: [
+        "Deep knowledge of at least one major cloud platform — AWS is most in-demand, followed by Azure and GCP",
+        "Linux system administration, still foundational since most cloud infrastructure runs on it",
+        "Networking fundamentals: VPCs, subnets, load balancing, DNS, firewalls",
+        "Infrastructure as Code — Terraform is the most widely requested tool across providers",
+        "Scripting and automation (Python, Bash)",
+        "Containerization and orchestration — Docker and Kubernetes are close to standard requirements now",
+        "CI/CD pipeline tools (Jenkins, GitHub Actions, GitLab CI)",
+        "Monitoring and observability tools (Prometheus, Grafana, CloudWatch, Datadog)"
+      ],
+      certs: "Certifications carry real, explicit weight here, more so than in many other IT fields. AWS Certified Solutions Architect (Associate, then Professional) is the most recognized credential; Azure Administrator Associate or Solutions Architect Expert cover Microsoft's cloud; Google's Professional Cloud Architect covers GCP. The Certified Kubernetes Administrator (CKA) and HashiCorp Certified Terraform Associate are strong platform-agnostic additions.",
+      path: [
+        "A CS or IT degree is common but far from required — this is one of the more certification-driven fields in tech",
+        "Build a solid Linux and networking foundation before specializing in cloud",
+        "Get hands-on using a free tier (AWS, Azure, GCP all offer one) — deploy a real app, set up CI/CD, provision infrastructure with Terraform",
+        "Earn a foundational cloud certification early, like AWS Certified Cloud Practitioner or Solutions Architect Associate",
+        "Decide on a specialization as you grow: pure infrastructure, DevOps/automation, site reliability, or cloud security",
+        "Track the infrastructure-as-code trend — treating infrastructure as version-controlled, testable software is one of the clearest differentiators in interviews and pay negotiations"
+      ]
+    }
+  };
+
+  const ROLE_ORDER = ["dev","ba","data","sec","pm","ux","erp","cloud"];
+
+  const answers = new Array(QUESTIONS.length).fill(null);
+  let current = 0;
+  let cameFromResults = false;
+
+  const introPanel = document.getElementById('introPanel');
+  const quizPanel = document.getElementById('quizPanel');
+  const resultPanel = document.getElementById('resultPanel');
+  const quizFlow = document.getElementById('quizFlow');
+  const jobFlow = document.getElementById('jobFlow');
+  const jobPanel = document.getElementById('jobPanel');
+  const startBtn = document.getElementById('startBtn');
+  const qIndex = document.getElementById('qIndex');
+  const qTag = document.getElementById('qTag');
+  const qText = document.getElementById('qText');
+  const scaleEl = document.getElementById('scale');
+  const traceFill = document.getElementById('traceFill');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const retakeBtn = document.getElementById('retakeBtn');
+  const statusLine = document.getElementById('statusLine');
+  const logoBtn = document.getElementById('logoBtn');
+  const jobSelect = document.getElementById('jobSelect');
+
+  // Populate the nav dropdown
+  ROLE_ORDER.forEach(key => {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = ROLES[key].name;
+    jobSelect.appendChild(opt);
+  });
+
+  jobSelect.addEventListener('change', () => {
+    const key = jobSelect.value;
+    if (key){ showJobPage(key); }
+  });
+
+  logoBtn.addEventListener('click', () => {
+    jobSelect.value = "";
+    showQuizFlow();
+  });
+
+  startBtn.addEventListener('click', () => {
+    introPanel.classList.add('hidden');
+    quizPanel.classList.remove('hidden');
+    statusLine.textContent = "DRAFT / IN PROGRESS";
+    renderQuestion();
+  });
+
+  function renderQuestion(){
+    const q = QUESTIONS[current];
+    qIndex.textContent = `Q${current+1} / ${QUESTIONS.length}`;
+    qTag.textContent = q.tag;
+    qText.textContent = q.text;
+    traceFill.style.width = `${(current / QUESTIONS.length) * 100}%`;
+
+    scaleEl.innerHTML = "";
+    SCALE_LABELS.forEach((label, i) => {
+      const val = i + 1;
+      const wrap = document.createElement('button');
+      wrap.type = "button";
+      wrap.className = "node-wrap";
+      wrap.setAttribute('role','radio');
+      wrap.setAttribute('aria-pressed', answers[current] === val ? 'true' : 'false');
+      wrap.innerHTML = `<span class="node"></span><span class="node-label">${label}</span>`;
+      wrap.addEventListener('click', () => selectAnswer(val));
+      scaleEl.appendChild(wrap);
+    });
+
+    backBtn.disabled = current === 0;
+    nextBtn.disabled = answers[current] === null;
+    nextBtn.textContent = current === QUESTIONS.length - 1 ? "See my match →" : "Next →";
+  }
+
+  function selectAnswer(val){
+    answers[current] = val;
+    nextBtn.disabled = false;
+    [...scaleEl.children].forEach((wrap, i) => {
+      wrap.setAttribute('aria-pressed', (i+1) === val ? 'true' : 'false');
+    });
+  }
+
+  backBtn.addEventListener('click', () => {
+    if (current > 0){ current--; renderQuestion(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (current < QUESTIONS.length - 1){
+      current++;
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  });
+
+  retakeBtn.addEventListener('click', () => {
+    answers.fill(null);
+    current = 0;
+    resultPanel.classList.add('hidden');
+    introPanel.classList.remove('hidden');
+    statusLine.textContent = "DRAFT / IN PROGRESS";
+  });
+
+  function computeScores(){
+    const scores = {};
+    Object.keys(ROLES).forEach(k => scores[k] = 0);
+
+    QUESTIONS.forEach((q, i) => {
+      const val = answers[i];
+      const centered = val - 3; // -2..+2
+      scores[q.primary] += centered * 2;
+      if (q.secondary){
+        scores[q.secondary] += centered * 1;
+      }
+    });
+
+    return scores;
+  }
+
+  function showResults(){
+    quizPanel.classList.add('hidden');
+    resultPanel.classList.remove('hidden');
+    statusLine.textContent = "FINAL / MATCHED";
+
+    const scores = computeScores();
+    const ranked = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+    const [topKey] = ranked[0];
+    const top = ROLES[topKey];
+
+    document.getElementById('resultTitle').textContent = top.name;
+    document.getElementById('resultDesc').textContent = top.desc;
+
+    const maxScore = ranked[0][1];
+    const minScore = ranked[ranked.length - 1][1];
+    const range = Math.max(1, maxScore - minScore);
+
+    const barsEl = document.getElementById('bars');
+    barsEl.innerHTML = "";
+    ranked.forEach(([key, score], i) => {
+      const pct = Math.round(((score - minScore) / range) * 82) + 10; // 10–92%
+      const row = document.createElement('div');
+      row.className = "bar-row" + (i === 0 ? " top" : "");
+      row.innerHTML = `
+        <span class="label" data-key="${key}">${ROLES[key].short}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:0%"></div></div>
+        <span class="bar-pct">${i === 0 ? "★" : ""}</span>
+      `;
+      barsEl.appendChild(row);
+      requestAnimationFrame(() => {
+        row.querySelector('.bar-fill').style.width = pct + "%";
+      });
+    });
+
+    barsEl.querySelectorAll('.label').forEach(el => {
+      el.addEventListener('click', () => {
+        jobSelect.value = el.dataset.key;
+        showJobPage(el.dataset.key);
+      });
+    });
+  }
+
+  // ---------- Job detail page rendering ----------
+
+  function showQuizFlow(){
+    jobFlow.classList.add('hidden');
+    quizFlow.classList.remove('hidden');
+  }
+
+  function showJobPage(key){
+    const role = ROLES[key];
+    const d = DETAILS[key];
+    if (!role || !d) return;
+
+    quizFlow.classList.add('hidden');
+    jobFlow.classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+
+    const rangesHtml = d.ranges.map(r => `
+      <div class="range-row">
+        <span class="r-label">${r.label}</span>
+        <span class="r-value">${r.value}</span>
+      </div>
+    `).join('');
+
+    const tasksHtml = d.tasks.map(t => `<li>${t}</li>`).join('');
+    const skillsHtml = d.skills.map(s => `<li>${s}</li>`).join('');
+    const pathHtml = d.path.map(p => `<li>${p}</li>`).join('');
+
+    jobPanel.innerHTML = `
+      <div class="job-eyebrow">ROLE ${(ROLE_ORDER.indexOf(key)+1).toString().padStart(2,'0')} / ${ROLE_ORDER.length} — U.S. DATA, 2026</div>
+      <h2 class="job-title">${role.name}</h2>
+
+      <div class="salary-block">
+        <div class="salary-figure">${d.salaryFigure}</div>
+        <p class="salary-note">${d.salaryNote}</p>
+        <div class="salary-ranges">${rangesHtml}</div>
+      </div>
+
+      <div class="section-label">WHAT THE JOB IS</div>
+      <p class="body-text">${d.whatItIs}</p>
+
+      <div class="section-label">MAIN TASKS</div>
+      <ul class="task-list">${tasksHtml}</ul>
+
+      <div class="section-label">HOW TO PREPARE</div>
+      <div class="subhead">Core skills to build</div>
+      <ul class="task-list">${skillsHtml}</ul>
+      <div class="subhead">Certifications worth pursuing</div>
+      <p class="body-text">${d.certs}</p>
+      <div class="subhead">A realistic path in</div>
+      <ul class="task-list">${pathHtml}</ul>
+
+      <div class="nav-row" style="justify-content:flex-start;">
+        <button class="ghost" id="jobBackBtn">← Back</button>
+      </div>
+    `;
+
+    document.getElementById('jobBackBtn').addEventListener('click', () => {
+      jobSelect.value = "";
+      showQuizFlow();
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
+
